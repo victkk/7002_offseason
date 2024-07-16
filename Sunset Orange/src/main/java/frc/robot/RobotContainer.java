@@ -53,7 +53,7 @@ public class RobotContainer {
   private final SnapToAngleCommand mDriveWithRightStick = new SnapToAngleCommand(
       sDrivetrainSubsystem,
       () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
-      () -> driverController.getDriveRotationAngle(), // amp heading
+      () -> Optional.empty(),//driverController.getDriveRotationAngle(), // amp heading
       () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
 
   /**
@@ -113,23 +113,26 @@ public class RobotContainer {
 
     // Snap to Amp Angle
     // new Trigger(
-    //     () -> driverController.snapToAmpAngle() && driverController.getRawRotationRate() == 0.0)
-    //     .onTrue(
-    //         new SnapToAngleCommand(
-    //             sDrivetrainSubsystem,
-    //             () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
-    //             () -> Optional.of(Rotation2d.fromDegrees(90.0)), // amp heading
-    //             () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED,
-    //             () -> driverController.getDriveRotationAngle().isPresent()));
+    // () -> driverController.snapToAmpAngle() &&
+    // driverController.getRawRotationRate() == 0.0)
+    // .onTrue(
+    // new SnapToAngleCommand(
+    // sDrivetrainSubsystem,
+    // () ->
+    // driverController.getDriveTranslation(driverController.isRobotRelative()),
+    // () -> Optional.of(Rotation2d.fromDegrees(90.0)), // amp heading
+    // () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED,
+    // () -> driverController.getDriveRotationAngle().isPresent()));
 
     // Trigger Rotate
-    new Trigger(() -> driverController.getRawRotationRate() != 0.0)
-        .onTrue(
-            new DriveWithTriggerCommand(
-                sDrivetrainSubsystem,
-                () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
-                () -> driverController.getRawRotationRate(), // amp heading
-                () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED));
+    // new Trigger(() -> driverController.getRawRotationRate() != 0.0)
+    // .onTrue(
+    // new DriveWithTriggerCommand(
+    // sDrivetrainSubsystem,
+    // () ->
+    // driverController.getDriveTranslation(driverController.isRobotRelative()),
+    // () -> driverController.getRawRotationRate(), // amp heading
+    // () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED));
 
     /*
      * // Vision Shoot
@@ -176,10 +179,10 @@ public class RobotContainer {
   //       .alongWith(new SetArmAngleCommand(mArm, parameters.angle_deg))
   //       .andThen(new FeedCommand(mTransfer));
 
-  //   Command stopShootingCommand = new InstantCommand(() -> mShooter.stop())
-  //       .andThen(new SetArmAngleCommand(mArm, ArmConstants.ARM_REST_ANGLE));
+  // Command stopShootingCommand = new InstantCommand(() -> mShooter.stop())
+  // .andThen(new SetArmAngleCommand(mArm, ArmConstants.ARM_REST_ANGLE));
 
-  //   trigger.whileTrue(shootCommand).onFalse(stopShootingCommand);
+  // trigger.whileTrue(shootCommand).onFalse(stopShootingCommand);
   // }
 
   /**

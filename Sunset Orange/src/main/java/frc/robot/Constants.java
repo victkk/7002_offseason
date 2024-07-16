@@ -42,10 +42,10 @@ public final class Constants {
 
     static {
       FL = new SwerveModuleConfig();
-      FL.driveID = 4;
-      FL.azimuthID = 5;
+      FL.driveID = 6;
+      FL.azimuthID = 7;
       FL.azimuthBlockCenterDegree = 105.0;
-      FL.azimuthEncoderOffsetRotation = -0.081055;
+      FL.azimuthEncoderOffsetRotation = -0.038574;
       FL.lightGateID = 0;
       FL.corner = ModuleCorner.Front_Left;
       FL.invertDrive = InvertedValue.CounterClockwise_Positive;
@@ -60,11 +60,11 @@ public final class Constants {
       FL.AZIMUTH_KF = 0.677;
 
       FR = new SwerveModuleConfig();
-      FR.driveID = 6;
-      FR.azimuthID = 7;
-      FR.azimuthBlockCenterDegree = 105.0;
-      FR.azimuthEncoderOffsetRotation = 0.075928;
-      FR.lightGateID = 3;
+      FR.driveID = 4;
+      FR.azimuthID = 5;
+      FR.azimuthBlockCenterDegree = 0.0;
+      FR.azimuthEncoderOffsetRotation = -0.035400;
+      FR.lightGateID = 1;
       FR.corner = ModuleCorner.Front_Right;
       FR.invertDrive = InvertedValue.CounterClockwise_Positive;
       FR.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -80,9 +80,9 @@ public final class Constants {
       BL = new SwerveModuleConfig();
       BL.driveID = 2;
       BL.azimuthID = 3;
-      BL.azimuthBlockCenterDegree = 105.0;
-      BL.azimuthEncoderOffsetRotation = -0.384277;
-      BL.lightGateID = 1;
+      BL.azimuthBlockCenterDegree = 0.0;
+      BL.azimuthEncoderOffsetRotation = 0.010498;
+      BL.lightGateID = 3;
       BL.corner = ModuleCorner.Back_Left;
       BL.invertDrive = InvertedValue.Clockwise_Positive;
       BL.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -99,8 +99,8 @@ public final class Constants {
       BR.driveID = 0;
       BR.azimuthID = 1;
       BR.azimuthBlockCenterDegree = 105.0;
-      BR.azimuthEncoderOffsetRotation = -0.057373;
-      BR.lightGateID = 2;
+      BR.azimuthEncoderOffsetRotation = 0.075684;
+      BR.lightGateID = 4;
       BR.corner = ModuleCorner.Back_Right;
       BR.invertDrive = InvertedValue.Clockwise_Positive;
       BR.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -121,8 +121,8 @@ public final class Constants {
     public static final double kDeadband = 0.1;
 
     // chassis dimensions
-    public static final double kTrackWidth = 0.56;
-    public static final double kWheelBase = 0.56;
+    public static final double kTrackWidth = 0.565;
+    public static final double kWheelBase = 0.565;
     public static final double kChassisWheelDiameterMeters = 0.13; // meters
     public static final double kChassisWheelCircumferenceMeters = kChassisWheelDiameterMeters * Math.PI; // meters
 

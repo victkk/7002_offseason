@@ -268,7 +268,7 @@ public class SwerveDriveModule {
   }
 
   public boolean checkLightGate() {
-    return !mLightGate.get(); // depend on the connection + -
+    return mLightGate.get(); // depend on the connection + -
   }
 
   /**

@@ -15,25 +15,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.auto.modes.*;
-import frc.robot.commands.ChaseNoteStateMachineCommand;
 import frc.robot.commands.DriveWithTriggerCommand;
-import frc.robot.commands.FeedCommand;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.NavigateToAmp;
-import frc.robot.commands.OuttakeCommand;
-import frc.robot.commands.SetArmAngleCommand;
-import frc.robot.commands.SetShooterTargetCommand;
 import frc.robot.commands.SnapToAngleCommand;
-import frc.robot.commands.VisionShootCommand;
 import frc.robot.lib6907.CommandSwerveController;
 import frc.robot.lib6907.CommandSwerveController.DriveMode;
-import frc.robot.subsystems.ApriltagCoprocessor;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.GamePieceProcessor;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Transfer;
 import frc.robot.utils.ShootingParameters;
 import java.util.Optional;
 
@@ -56,11 +42,7 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
   /* Subsystems */
   private final DrivetrainSubsystem sDrivetrainSubsystem = new DrivetrainSubsystem();
-  private final Intake mIntake = new Intake();
-  private final Transfer mTransfer = new Transfer();
-  private final Shooter mShooter = new Shooter();
-  private final Arm mArm = new Arm();
-  private final ApriltagCoprocessor mCoprocessor = ApriltagCoprocessor.getInstance();
+
 
   private static final boolean kDualController = false;
   private static final boolean isRedAlliance = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
@@ -84,10 +66,6 @@ public class RobotContainer {
     sDrivetrainSubsystem.configureAutoBuilder();
     pushChooser();
     SmartDashboard.putData(sDrivetrainSubsystem);
-    SmartDashboard.putData(mIntake);
-    SmartDashboard.putData(mTransfer);
-    SmartDashboard.putData(mArm);
-    SmartDashboard.putData(mShooter);
     SmartDashboard.putData(mDriveWithRightStick);
   }
 
@@ -183,19 +161,7 @@ public class RobotContainer {
     
     //  driverController.y().whileTrue(new NavigateToAmp(sDrivetrainSubsystem, mShooter, mTransfer, mArm, isRedAlliance));
 
-    // intake system bindings
-    if (kDualController) {
-      operatorController.a().whileTrue(new IntakeCommand(mIntake, mTransfer));
-      operatorController.b().whileTrue(new OuttakeCommand(mIntake, mTransfer));
-    } else {
-      // manual intake
-      driverController
-          .a()
-          .and(driverController.rightBumper())
-          .whileTrue(new IntakeCommand(mIntake, mTransfer));
 
-      driverController.b().whileTrue(new OuttakeCommand(mIntake, mTransfer));
-    }
 
     // Below Speaker
     // if (kDualController) {
@@ -234,18 +200,7 @@ public class RobotContainer {
     // init points
     mChooser = new SendableChooser<>();
 
-    // tested
-    mChooser.setDefaultOption(
-        "nearAmp2Plus3",
-        new NearAmp2Plus3Command(mIntake, mShooter, mArm, mTransfer, sDrivetrainSubsystem));
-    mChooser.addOption(
-        "center4", new Home4AutoCommand(mIntake, mShooter, mArm, mTransfer, sDrivetrainSubsystem));
-    mChooser.addOption(
-        "home2chase1",
-        new Home2ChaseMid1AutoCommand(mIntake, mShooter, mArm, mTransfer, sDrivetrainSubsystem));
-    mChooser.addOption(
-        "home4", new Home4AutoCommand(mIntake, mShooter, mArm, mTransfer, sDrivetrainSubsystem));
-    mChooser.addOption("example", new TestAutoCommand(sDrivetrainSubsystem));
+
 
     SmartDashboard.putData("AUTO CHOICES", mChooser);
   }

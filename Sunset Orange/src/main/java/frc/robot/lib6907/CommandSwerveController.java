@@ -47,11 +47,11 @@ public class CommandSwerveController extends CommandXboxController {
     double xSpeed =
         driveMode == DriveMode.ROBOT_ORIENTED
             ? -getLeftY()
-            : translationDirectionMultiplier * getLeftY();
+            : translationDirectionMultiplier * -getLeftY();
     double ySpeed =
         driveMode == DriveMode.ROBOT_ORIENTED
             ? -getLeftX()
-            : translationDirectionMultiplier * getLeftX();
+            : translationDirectionMultiplier * -getLeftX();
 
     // this prevents the target velocity increase to fast, but should be included in setpoint
     // generator already

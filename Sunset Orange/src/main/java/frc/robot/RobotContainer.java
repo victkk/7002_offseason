@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,10 +16,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.auto.modes.*;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DriveWithTriggerCommand;
 import frc.robot.commands.SnapToAngleCommand;
 import frc.robot.lib6907.CommandSwerveController;
 import frc.robot.lib6907.CommandSwerveController.DriveMode;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.utils.ShootingParameters;
 import java.util.Optional;
@@ -42,7 +45,7 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
   /* Subsystems */
   private final DrivetrainSubsystem sDrivetrainSubsystem = new DrivetrainSubsystem();
-
+  private final Climber sClimber = new Climber();
 
   private static final boolean kDualController = false;
   private static final boolean isRedAlliance = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
@@ -56,12 +59,13 @@ public class RobotContainer {
       () -> Optional.empty(),//driverController.getDriveRotationAngle(), // amp heading
       () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
 
+  private final ClimbCommand mClimbCommand = new ClimbCommand(sClimber, ()->{if(driverController.getRightX()>0.2)return driverController.getRightX()/5.0;else return 0.0;});
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     sDrivetrainSubsystem.setDefaultCommand(mDriveWithRightStick);
-
+    sClimber.setDefaultCommand(mClimbCommand);
     configureBindings();
     sDrivetrainSubsystem.configureAutoBuilder();
     pushChooser();
@@ -84,25 +88,6 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
-    /*
-     * // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-     * new Trigger(m_exampleSubsystem::exampleCondition)
-     * .onTrue(new ExampleCommand(m_exampleSubsystem));
-     *
-     * // Schedule `exampleMethodCommand` when the Xbox controller's B button is
-     * // pressed,
-     * // cancelling on release.
-     * m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-     */
-
-    /*
-     * Swerve
-     */
-
-    // Default Command: Drive with right stick
-
-    // reset heading
     Command resetHeadingCommand = new InstantCommand(
         () -> {
           sDrivetrainSubsystem.zeroHeading();
@@ -110,80 +95,11 @@ public class RobotContainer {
         });
     resetHeadingCommand.addRequirements(sDrivetrainSubsystem);
     driverController.start().onTrue(resetHeadingCommand);
-
-    // Snap to Amp Angle
-    // new Trigger(
-    // () -> driverController.snapToAmpAngle() &&
-    // driverController.getRawRotationRate() == 0.0)
-    // .onTrue(
-    // new SnapToAngleCommand(
-    // sDrivetrainSubsystem,
-    // () ->
-    // driverController.getDriveTranslation(driverController.isRobotRelative()),
-    // () -> Optional.of(Rotation2d.fromDegrees(90.0)), // amp heading
-    // () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED,
-    // () -> driverController.getDriveRotationAngle().isPresent()));
-
-    // Trigger Rotate
-    // new Trigger(() -> driverController.getRawRotationRate() != 0.0)
-    // .onTrue(
-    // new DriveWithTriggerCommand(
-    // sDrivetrainSubsystem,
-    // () ->
-    // driverController.getDriveTranslation(driverController.isRobotRelative()),
-    // () -> driverController.getRawRotationRate(), // amp heading
-    // () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED));
-
-    /*
-     * // Vision Shoot
-     * Trigger visionShootTrigger = driverController.y();
-     * 
-     * if (kDualController) {
-     * visionShootTrigger = operatorController.y();
-     * }
-     * 
-     * visionShootTrigger
-     * .whileTrue(
-     * new VisionShootCommand(
-     * mShooter,
-     * mArm,
-     * mTransfer,
-     * sDrivetrainSubsystem,
-     * mIntake,
-     * () -> driverController.getDriveTranslation(DriveMode.FIELD_ORIENTED))
-     * .withInterruptBehavior(InterruptionBehavior.kCancelIncoming))
-     * .onFalse(
-     * new InstantCommand(
-     * () -> {
-     * mShooter.stop();
-     * mArm.stop();
-     * mTransfer.stop();
-     * mIntake.stop();
-     * }));
-     */
     
-    //  driverController.y().whileTrue(new NavigateToAmp(sDrivetrainSubsystem, mShooter, mTransfer, mArm, isRedAlliance));
 
 
-
-    // Below Speaker
-    // if (kDualController) {
-    //   buildShootBinding(operatorController.x(), ShootingParameters.BELOW_SPEAKER);
-    // } else {
-    //   buildShootBinding(driverController.x(), ShootingParameters.BELOW_SPEAKER);
-    // }
   }
 
-  // private void buildShootBinding(Trigger trigger, ShootingParameters parameters) {
-  //   Command shootCommand = new SetShooterTargetCommand(mShooter, parameters.speed_rps)
-  //       .alongWith(new SetArmAngleCommand(mArm, parameters.angle_deg))
-  //       .andThen(new FeedCommand(mTransfer));
-
-  // Command stopShootingCommand = new InstantCommand(() -> mShooter.stop())
-  // .andThen(new SetArmAngleCommand(mArm, ArmConstants.ARM_REST_ANGLE));
-
-  // trigger.whileTrue(shootCommand).onFalse(stopShootingCommand);
-  // }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -46,7 +46,7 @@ public final class Constants {
       FL.azimuthID = 7;
       FL.azimuthBlockCenterDegree = 105.0;
       FL.azimuthEncoderOffsetRotation = -0.038574;
-      FL.lightGateID = 0;
+      FL.lightGateID = 1;
       FL.corner = ModuleCorner.Front_Left;
       FL.invertDrive = InvertedValue.CounterClockwise_Positive;
       FL.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -64,7 +64,7 @@ public final class Constants {
       FR.azimuthID = 5;
       FR.azimuthBlockCenterDegree = 0.0;
       FR.azimuthEncoderOffsetRotation = -0.035400;
-      FR.lightGateID = 1;
+      FR.lightGateID = 2;
       FR.corner = ModuleCorner.Front_Right;
       FR.invertDrive = InvertedValue.CounterClockwise_Positive;
       FR.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -81,8 +81,8 @@ public final class Constants {
       BL.driveID = 2;
       BL.azimuthID = 3;
       BL.azimuthBlockCenterDegree = 0.0;
-      BL.azimuthEncoderOffsetRotation = 0.010498;
-      BL.lightGateID = 3;
+      BL.azimuthEncoderOffsetRotation = 0.666504;
+      BL.lightGateID = 0;
       BL.corner = ModuleCorner.Back_Left;
       BL.invertDrive = InvertedValue.Clockwise_Positive;
       BL.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -100,7 +100,7 @@ public final class Constants {
       BR.azimuthID = 1;
       BR.azimuthBlockCenterDegree = 105.0;
       BR.azimuthEncoderOffsetRotation = 0.075684;
-      BR.lightGateID = 4;
+      BR.lightGateID = 3;//4;
       BR.corner = ModuleCorner.Back_Right;
       BR.invertDrive = InvertedValue.Clockwise_Positive;
       BR.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -176,6 +176,16 @@ public final class Constants {
 
     public static final double STABILIZE_TIME = 0.1;
   }
+
+  public static final class ClimberConstants{
+    public static final int LEFT_CLIMBER_ID =; // TODO 
+    public static final int RIGHT_CLIMBER_ID =;
+    public static final double MAX_TRAVEL_DIST =;
+    public static final double DIAMETER=;
+    public static final double CLIMBER_GEAR_RATIO=;
+
+  }
+
 
   public static final class ShooterConstants {
     public static final int SHOOTER_ID = 12;

@@ -34,19 +34,37 @@ public class Climber extends SubsystemBase {
         rightClimberMotor.setControl(new Follower(leftClimberMotor.getDeviceID(), false));
 
         // Configure current limits
-        var leftClimberConfigs = new TalonFXConfiguration();
-        var rightClimberConfigs = new TalonFXConfiguration();
+
             
 
         var leftClimberConfig = new TalonFXConfiguration();
-        var mSoftLimitConf  = new SoftwareLimitSwitchConfigs();
+        var leftSoftLimitConf  = new SoftwareLimitSwitchConfigs();
         leftClimberConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         leftClimberConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        mSoftLimitConf.ForwardSoftLimitThreshold = ClimberConstants.MAX_TRAVEL_DIST/ClimberConstants.DIAMETER/Math.PI;
-        mSoftLimitConf.ForwardSoftLimitEnable = true;
-        mSoftLimitConf.ReverseSoftLimitThreshold = 0;
-        mSoftLimitConf.ReverseSoftLimitEnable = true;
-        leftClimberConfig.SoftwareLimitSwitch = mSoftLimitConf;
+        leftSoftLimitConf.ForwardSoftLimitThreshold = ClimberConstants.MAX_TRAVEL_DIST/ClimberConstants.DIAMETER/Math.PI;
+        leftSoftLimitConf.ForwardSoftLimitEnable = true;
+        leftSoftLimitConf.ReverseSoftLimitThreshold = 0;
+        leftSoftLimitConf.ReverseSoftLimitEnable = true;
+        leftClimberConfig.SoftwareLimitSwitch = leftSoftLimitConf;
+        leftClimberConfig.Voltage.PeakForwardVoltage = 12.0;
+        leftClimberConfig.Voltage.PeakReverseVoltage = -12.0;
+        leftClimberConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
+        leftClimberConfig.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.02;
+        leftClimberConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        leftClimberConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
+        leftClimberConfig.CurrentLimits.SupplyCurrentThreshold = 60.0;
+        leftClimberConfig.CurrentLimits.SupplyTimeThreshold = 0.5;
+        leftClimberConfig.Feedback.SensorToMechanismRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
+        
+        var rightClimberConfig = new TalonFXConfiguration();
+        var rightSoftLimitConf  = new SoftwareLimitSwitchConfigs();
+        leftClimberConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        leftClimberConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        rightSoftLimitConf.ForwardSoftLimitThreshold = ClimberConstants.MAX_TRAVEL_DIST/ClimberConstants.DIAMETER/Math.PI;
+        rightSoftLimitConf.ForwardSoftLimitEnable = true;
+        rightSoftLimitConf.ReverseSoftLimitThreshold = 0;
+        rightSoftLimitConf.ReverseSoftLimitEnable = true;
+        leftClimberConfig.SoftwareLimitSwitch = rightSoftLimitConf;
         leftClimberConfig.Voltage.PeakForwardVoltage = 12.0;
         leftClimberConfig.Voltage.PeakReverseVoltage = -12.0;
         leftClimberConfig.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 0.02;
@@ -57,8 +75,8 @@ public class Climber extends SubsystemBase {
         leftClimberConfig.CurrentLimits.SupplyTimeThreshold = 0.5;
         leftClimberConfig.Feedback.SensorToMechanismRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
 
-        leftClimberMotor.getConfigurator().apply(leftClimberConfigs);
-        rightClimberMotor.getConfigurator().apply(rightClimberConfigs);
+        leftClimberMotor.getConfigurator().apply(leftClimberConfig);
+        rightClimberMotor.getConfigurator().apply(rightClimberConfig);
         leftClimberMotor.setPosition(0,Constants.kLongCANTimeoutSec);   
         rightClimberMotor.setPosition(0,Constants.kLongCANTimeoutSec);
     }

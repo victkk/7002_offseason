@@ -5,8 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,11 +20,16 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.auto.modes.*;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DriveWithTriggerCommand;
+import frc.robot.commands.FeedCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToAngleCommand;
 import frc.robot.lib6907.CommandSwerveController;
 import frc.robot.lib6907.CommandSwerveController.DriveMode;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.Intaker;
+import frc.robot.subsystems.Shooter;
 import frc.robot.utils.ShootingParameters;
 import java.util.Optional;
 
@@ -46,6 +53,8 @@ public class RobotContainer {
   /* Subsystems */
   private final DrivetrainSubsystem sDrivetrainSubsystem = new DrivetrainSubsystem();
   private final Climber sClimber = new Climber();
+  public final Intaker sIntaker = new Intaker();
+  public final Shooter sShooter = new Shooter();
 
   private static final boolean kDualController = false;
   private static final boolean isRedAlliance = DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
@@ -59,17 +68,20 @@ public class RobotContainer {
       () -> Optional.empty(),//driverController.getDriveRotationAngle(), // amp heading
       () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
 
-  private final ClimbCommand mClimbCommand = new ClimbCommand(sClimber, ()->{if(driverController.getRightX()>0.2)return driverController.getRightX()/5.0;else return 0.0;});
+  // private final ClimbCommand mClimbCommand = new ClimbCommand(sClimber, ()->{if(driverController.getRightX()>0.2)return driverController.getRightX()/5.0;else return 0.0;});
+  private final IntakeCommand mIntakeCommand = new IntakeCommand(sIntaker);
+  private final FeedCommand mFeedCommand = new FeedCommand(sIntaker);
+  private final ShootCommand mShootCommand = new ShootCommand(sShooter, 100);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     sDrivetrainSubsystem.setDefaultCommand(mDriveWithRightStick);
-    sClimber.setDefaultCommand(mClimbCommand);
     configureBindings();
     sDrivetrainSubsystem.configureAutoBuilder();
     pushChooser();
     SmartDashboard.putData(sDrivetrainSubsystem);
+    SmartDashboard.putData(sIntaker);
     SmartDashboard.putData(mDriveWithRightStick);
   }
 
@@ -96,8 +108,10 @@ public class RobotContainer {
     resetHeadingCommand.addRequirements(sDrivetrainSubsystem);
     driverController.start().onTrue(resetHeadingCommand);
     
-
-
+    driverController.a().whileTrue(mIntakeCommand);
+    driverController.x().whileTrue(mShootCommand.andThen(mFeedCommand)).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));
+    
+      
   }
 
 

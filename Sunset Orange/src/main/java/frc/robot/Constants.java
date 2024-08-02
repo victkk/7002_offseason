@@ -178,18 +178,34 @@ public final class Constants {
   }
 
   public static final class ClimberConstants{
-    public static final int LEFT_CLIMBER_ID =; // TODO 
-    public static final int RIGHT_CLIMBER_ID =;
-    public static final double MAX_TRAVEL_DIST =;
-    public static final double DIAMETER=;
-    public static final double CLIMBER_GEAR_RATIO=;
+    public static final int LEFT_CLIMBER_ID =10; // TODO 
+    public static final int RIGHT_CLIMBER_ID =11;
+    public static final double MAX_TRAVEL_DIST =15;
+    public static final double DIAMETER=0.10;
+    public static final double CLIMBER_GEAR_RATIO=6;
 
   }
 
+  public static final class IntakerConstants{
+    public static final int ROLLER_ID =10; // TODO 
+    public static final int ARM_ID =14;
+        // arm pitch when resting in degrees
+    public static final double REST_ANGLE = 13.0;
+    // arm pitch when resting in rotations
+    public static final double REST_POSITION = REST_ANGLE / 360.0;
+    // arm pitch when in max pitch in degrees
+    public static final double MAX_ANGLE = 193.0;
+    // arm pitch when in max pitch in rotations
+    public static final double MAX_POSITION = MAX_ANGLE / 360.0;
+    public static final double ARM_GEAR_RATIO=24;
 
+    public static final double FEED_ANGLE=30.0;
+    public static final double FEED_POSITION = FEED_ANGLE / 360.0;
+  }
   public static final class ShooterConstants {
     public static final int SHOOTER_ID = 12;
     public static final int SHOOTER_FOLLOWER = 15;
+    public static final double GEAR_RATIO = 1.6;
   }
 
   public static final class VisionShootConstants {

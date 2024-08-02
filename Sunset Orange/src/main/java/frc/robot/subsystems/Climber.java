@@ -79,6 +79,8 @@ public class Climber extends SubsystemBase {
         rightClimberMotor.getConfigurator().apply(rightClimberConfig);
         leftClimberMotor.setPosition(0,Constants.kLongCANTimeoutSec);   
         rightClimberMotor.setPosition(0,Constants.kLongCANTimeoutSec);
+        leftClimberMotor.optimizeBusUtilization();
+        rightClimberMotor.optimizeBusUtilization();
     }
 
     public void setClimberDuty(double duty) {

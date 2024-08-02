@@ -237,9 +237,7 @@ public class SwerveSetpointGenerator {
         // from previous stop to stop, go X CROSS
         need_to_steer = false;
         for (int i = 0; i < 4; i++) {
-          // Rotation2d targ = modules[i].getAngle();
-          Rotation2d targ = new Rotation2d();
-
+          Rotation2d targ = modules[i].getAngle();
           Rotation2d diff = prevSetpoint.mModuleStates[i].angle.minus(targ);
           if (flipHeading(diff)) {
             targ = flip(targ);

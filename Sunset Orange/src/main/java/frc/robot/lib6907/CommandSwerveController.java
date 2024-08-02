@@ -19,12 +19,12 @@ public class CommandSwerveController extends CommandXboxController {
   private static final double NEAR_POLE_DRIVE_DEGREES = 7;
   private static final double NEAR_POLE_TURN_DEGREES = 7;
 
-  private final SlewRateLimiter translationXRateLimiter =
-      new SlewRateLimiter(5); // (1 / seconds_from_neutral_to_full)
-  private final SlewRateLimiter translationYRateLimiter =
-      new SlewRateLimiter(5); // (1 / seconds_from_neutral_to_full)
-  private final SlewRateLimiter rotationRateLimiter =
-      new SlewRateLimiter(5); // (1 / seconds_from_neutral_to_full)
+  private final SlewRateLimiter translationXRateLimiter = new SlewRateLimiter(5); // (1 /
+  // seconds_from_neutral_to_full)
+  private final SlewRateLimiter translationYRateLimiter = new SlewRateLimiter(5); // (1 /
+  // seconds_from_neutral_to_full)
+  private final SlewRateLimiter rotationRateLimiter = new SlewRateLimiter(5); // (1 /
+  // seconds_from_neutral_to_full)
 
   private double translationDirectionMultiplier = 1.0; // 1.0 for blue, -1.0 for red
 
@@ -47,11 +47,11 @@ public class CommandSwerveController extends CommandXboxController {
     double xSpeed =
         driveMode == DriveMode.ROBOT_ORIENTED
             ? -getLeftY()
-            : translationDirectionMultiplier * -getLeftY();
+            : translationDirectionMultiplier * getLeftY();
     double ySpeed =
         driveMode == DriveMode.ROBOT_ORIENTED
             ? -getLeftX()
-            : translationDirectionMultiplier * -getLeftX();
+            : translationDirectionMultiplier * getLeftX();
 
     // this prevents the target velocity increase to fast, but should be included in setpoint
     // generator already
@@ -187,9 +187,5 @@ public class CommandSwerveController extends CommandXboxController {
    */
   public DriveMode isRobotRelative() {
     return getHID().getLeftBumper() ? DriveMode.ROBOT_ORIENTED : DriveMode.FIELD_ORIENTED;
-  }
-
-  public Boolean snapToAmpAngle() {
-    return getHID().getBackButton();
   }
 }

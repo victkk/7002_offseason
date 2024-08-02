@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.IntakerConstants;
 
 public class Intaker extends SubsystemBase {
@@ -37,7 +36,7 @@ public class Intaker extends SubsystemBase {
     public Intaker() {
         mRollerTalon = new TalonFX(IntakerConstants.ROLLER_ID);
         mArmTalon = new TalonFX(IntakerConstants.ARM_ID);
-        mIntakeOmron = new DigitalInput(IntakeConstants.INTAKER_ENTER_OMRON_ID);
+        mIntakeOmron = new DigitalInput(IntakerConstants.INTAKER_ENTER_OMRON_ID);
 
         //arm configs       
         var armConfig = new TalonFXConfiguration();
@@ -102,9 +101,7 @@ public class Intaker extends SubsystemBase {
         // ControlRequest Instance
       }
     
-      public double getTargetAngle(){
-        return targetAngle;
-      }
+
       public void setRollerIntake() {
         mRollerTalon.setControl(IntakeVoltage.withOutput(6));
         // ControlRequest Instance
@@ -132,7 +129,9 @@ public class Intaker extends SubsystemBase {
           return Double.NaN;
         }
       }
-    
+      public double getRPS(){
+        return mRollerTalon.getVelocity().getValueAsDouble();
+      }
       public double getAngleDeg() {
         return getRotation() * 360.0;
       }
@@ -162,8 +161,9 @@ public class Intaker extends SubsystemBase {
         getName() + "Intake Motor Control Request",
         () -> mArmTalon.getAppliedControl().toString(),
         null);
-    builder.addDoubleProperty("target", ()->getTargetAngleDeg(), null);
-    builder.addDoubleProperty("real", ()->getAngleDeg(), null);
+    builder.addDoubleProperty(getName()+"arm target angle", ()->getTargetAngleDeg(), null);
+    builder.addDoubleProperty(getName()+"arm actual angle", ()->getAngleDeg(), null);
+    builder.addDoubleProperty(getName()+"current RPS", ()->getRPS(), null);
 
 
   }

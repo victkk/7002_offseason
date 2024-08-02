@@ -18,14 +18,12 @@ public class FeedCommand extends Command {
 
     @Override
     public void execute(){
-        if(Math.abs(sIntaker.getAngleDeg()-sIntaker.getTargetAngle())<3)
+        if(Math.abs(sIntaker.getAngleDeg()-sIntaker.getTargetAngleDeg())<3)
             sIntaker.setRollerFeed();
     }
     @Override
     public void end(boolean isInterrupted){
-        sIntaker.setAngle(30);
         sIntaker.stopRoller();
-
     }
     
 }

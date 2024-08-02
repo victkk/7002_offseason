@@ -15,7 +15,6 @@ import frc.robot.subsystems.Intaker;
  */
 public class IntakeCommand extends Command {
   private final Intaker sIntaker;
-  private boolean isFinished=false;
     
   public IntakeCommand(Intaker intaker) {
     sIntaker = intaker;
@@ -27,7 +26,7 @@ public class IntakeCommand extends Command {
 
   @Override
   public void initialize() {
-    sIntaker.setAngle(170);
+    sIntaker.setAngle(IntakerConstants.INTAKE_ANGLE);
     sIntaker.setRollerIntake();
   }
 

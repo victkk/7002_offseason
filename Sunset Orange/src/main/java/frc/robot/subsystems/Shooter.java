@@ -44,8 +44,8 @@ public class Shooter extends SubsystemBase {
         shooterConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
         shooterConfig.CurrentLimits.SupplyCurrentThreshold = 60.0;
         shooterConfig.CurrentLimits.SupplyTimeThreshold = 0.5;
-        shooterConfig.Slot0.kV = 0.213;
-        shooterConfig.Slot0.kP = 0.25;
+        shooterConfig.Slot0.kV = 0.12;
+        shooterConfig.Slot0.kP = 0.45;//TODO tune
         shooterConfig.Slot0.kI = 3.0;
         shooterConfig.Slot0.kD = 0.0;
         shooterConfig.Feedback.SensorToMechanismRatio = ShooterConstants.GEAR_RATIO;        
@@ -92,8 +92,8 @@ public class Shooter extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
       builder.addDoubleProperty(getName()+"Main RPS", ()->getMainMotorVelocity(), null);
-      
       builder.addDoubleProperty(getName()+"Follower RPS", ()->getFollowerVelocity(), null);
+      builder.addDoubleProperty(getName()+"target RPS", ()->shooterTargetVelocity.Velocity, null);
 
  
   }

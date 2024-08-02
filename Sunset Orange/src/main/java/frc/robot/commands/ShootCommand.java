@@ -11,7 +11,7 @@ public class ShootCommand extends Command {
     Shooter sShooter;
     double target_rps;
     private static final double STABLIZE_TIME = 0.1;
-    private static final double ERR_TOL = 5;
+
     private boolean isFinished = false;
     private DualEdgeDelayedBoolean spinStablized =
         new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), STABLIZE_TIME, EdgeType.RISING);
@@ -35,8 +35,8 @@ public class ShootCommand extends Command {
         SmartDashboard.putNumber("22",followerVelocity);
         
         if (
-                spinStablized.update(Timer.getFPGATimestamp(),Math.abs(mainMotorVelocity - target_rps) < ERR_TOL
-                && Math.abs(followerVelocity - target_rps) < ERR_TOL))
+                spinStablized.update(Timer.getFPGATimestamp(),mainMotorVelocity - target_rps >0
+                && Math.abs(followerVelocity - target_rps) > 0))
                 isFinished= true;
         
     }

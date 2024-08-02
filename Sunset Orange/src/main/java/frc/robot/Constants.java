@@ -147,20 +147,7 @@ public final class Constants {
     public static final int kDefaultUpdateFreq = 50;
   }
 
-  public static final class IntakeConstants {
-    // INTAKER
-    public static final int INTAKER_ID = 11;
-    public static final int INTAKER_CENTER_ID = 13;
-    // used for LED to tell note entered state
-    public static final int INTAKER_ENTER_OMRON_ID = 9;
 
-  }
-
-  public static final class TransferConstants {
-    // TRANSFER
-    public static final int TRANSFER_ID = 27;
-    public static final int TRANSFER_OMRON_PORT = 5;
-  }
 
   public static final class ArmConstants {
     // ARM
@@ -178,7 +165,7 @@ public final class Constants {
   }
 
   public static final class ClimberConstants{
-    public static final int LEFT_CLIMBER_ID =10; // TODO 
+    public static final int LEFT_CLIMBER_ID =10; 
     public static final int RIGHT_CLIMBER_ID =11;
     public static final double MAX_TRAVEL_DIST =15;
     public static final double DIAMETER=0.10;
@@ -187,25 +174,36 @@ public final class Constants {
   }
 
   public static final class IntakerConstants{
-    public static final int ROLLER_ID =10; // TODO 
+    // motor id for Intaker arm and roller
+    public static final int ROLLER_ID =10; 
     public static final int ARM_ID =14;
-        // arm pitch when resting in degrees
+     
+    //arm angle when the intaker rests on shooter
     public static final double REST_ANGLE = 13.0;
-    // arm pitch when resting in rotations
     public static final double REST_POSITION = REST_ANGLE / 360.0;
-    // arm pitch when in max pitch in degrees
-    public static final double MAX_ANGLE = 193.0;
-    // arm pitch when in max pitch in rotations
-    public static final double MAX_POSITION = MAX_ANGLE / 360.0;
-    public static final double ARM_GEAR_RATIO=24;
 
+    //arm angle when the intaker rests on ground
+    public static final double MAX_ANGLE = 193.0;
+    public static final double MAX_POSITION = MAX_ANGLE / 360.0;
+
+    //arm angle when the intaker feed to shooter
     public static final double FEED_ANGLE=20.0;
     public static final double FEED_POSITION = FEED_ANGLE / 360.0;
+  
+    //arm angle when the intaker intake
+    public static final double INTAKE_ANGLE=20.0;
+    public static final double INTAKE_POSITION = FEED_ANGLE / 360.0;
+
+    //arm gear ratio
+    public static final double ARM_GEAR_RATIO=24;
+
+    // used for stop intaking
+    public static final int INTAKER_ENTER_OMRON_ID = 9;
   }
   public static final class ShooterConstants {
     public static final int SHOOTER_ID = 11;
     public static final int SHOOTER_FOLLOWER = 13;
-    public static final double GEAR_RATIO = 20/32;
+    public static final double GEAR_RATIO = 20.0/32.0;
   }
 
   public static final class VisionShootConstants {

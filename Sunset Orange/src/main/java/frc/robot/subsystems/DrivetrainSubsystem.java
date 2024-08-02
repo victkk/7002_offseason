@@ -479,7 +479,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         anglerot = anglerot - module.getAzimuthOffsetRotations();
         mModulePositions[i].angle = Rotation2d.fromDegrees(anglerot * 360);
       }
-      // mEstimator.updateWithTime(timestamp, getGyroYaw(), mModulePositions);
+      mEstimator.updateWithTime(timestamp, getGyroYaw(), mModulePositions);
       mHeading.put(timestamp, getHeading());
     }
   }

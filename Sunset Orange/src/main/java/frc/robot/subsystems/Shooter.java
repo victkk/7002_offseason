@@ -44,18 +44,23 @@ public class Shooter extends SubsystemBase {
         shooterConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
         shooterConfig.CurrentLimits.SupplyCurrentThreshold = 60.0;
         shooterConfig.CurrentLimits.SupplyTimeThreshold = 0.5;
-        shooterConfig.Slot0.kV = 0.113;
-        shooterConfig.Slot0.kP = 0.15;
+        shooterConfig.Slot0.kV = 0.213;
+        shooterConfig.Slot0.kP = 0.25;
         shooterConfig.Slot0.kI = 3.0;
         shooterConfig.Slot0.kD = 0.0;
         shooterConfig.Feedback.SensorToMechanismRatio = ShooterConstants.GEAR_RATIO;        
         mLeftTalon.getConfigurator().apply(shooterConfig);
         mLeftTalon.setControl(Constants.NEUTRAL);
         mLeftTalon.optimizeBusUtilization();
+
+        shooterConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
         mRightTalon.getConfigurator().apply(shooterConfig);
         mRightTalon.setControl(Constants.NEUTRAL);
         mRightTalon.optimizeBusUtilization();
         
+        mLeftTalon.getVelocity().setUpdateFrequency(100, Constants.kLongCANTimeoutSec);
+        mRightTalon.getVelocity().setUpdateFrequency(100, Constants.kLongCANTimeoutSec);
     }
     public void setSpeed(double target_rps){
         shooterTargetVelocity.Velocity = target_rps;
@@ -69,10 +74,13 @@ public class Shooter extends SubsystemBase {
 
 
     public double getMainMotorVelocity() {
+
         return mLeftTalon.getVelocity().getValueAsDouble();
       }
     
       public double getFollowerVelocity() {
+
+      
         return mRightTalon.getVelocity().getValueAsDouble();
       }
     
@@ -83,7 +91,10 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
+      builder.addDoubleProperty(getName()+"Main RPS", ()->getMainMotorVelocity(), null);
+      
+      builder.addDoubleProperty(getName()+"Follower RPS", ()->getFollowerVelocity(), null);
 
-
+ 
   }
 }

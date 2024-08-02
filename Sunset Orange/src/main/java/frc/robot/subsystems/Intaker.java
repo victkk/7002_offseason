@@ -18,6 +18,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -28,13 +29,15 @@ import frc.robot.Constants.IntakerConstants;
 public class Intaker extends SubsystemBase {
     private final TalonFX mRollerTalon;
     private final TalonFX mArmTalon;
- 
+    private double targetAngle;
     private final VoltageOut IntakeVoltage = new VoltageOut(0);
     private final MotionMagicVoltage ArmMotionMagic = new MotionMagicVoltage(ArmConstants.ARM_REST_POSITION);
 
+    private final DigitalInput mIntakeOmron;
     public Intaker() {
         mRollerTalon = new TalonFX(IntakerConstants.ROLLER_ID);
         mArmTalon = new TalonFX(IntakerConstants.ARM_ID);
+        mIntakeOmron = new DigitalInput(IntakeConstants.INTAKER_ENTER_OMRON_ID);
 
         //arm configs       
         var armConfig = new TalonFXConfiguration();
@@ -42,9 +45,9 @@ public class Intaker extends SubsystemBase {
         armConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         armSoftLimitConf.ForwardSoftLimitThreshold = IntakerConstants.REST_POSITION-0.05;
-        armSoftLimitConf.ForwardSoftLimitEnable = true;
+        armSoftLimitConf.ForwardSoftLimitEnable = false;
         armSoftLimitConf.ReverseSoftLimitThreshold = IntakerConstants.MAX_POSITION+0.05;
-        armSoftLimitConf.ReverseSoftLimitEnable = true;
+        armSoftLimitConf.ReverseSoftLimitEnable = false;
         armConfig.SoftwareLimitSwitch = armSoftLimitConf;
         armConfig.Voltage.PeakForwardVoltage = 12.0;
         armConfig.Voltage.PeakReverseVoltage = -12.0;
@@ -56,10 +59,10 @@ public class Intaker extends SubsystemBase {
         armConfig.CurrentLimits.SupplyTimeThreshold = 0.5;
   
         armConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        armConfig.Slot0.kG = 0.1;
-        armConfig.Slot0.kV = 3.028;
-        armConfig.Slot0.kP = 10.0;
-        armConfig.Slot0.kI = 0.0;
+        armConfig.Slot0.kG = 0.3;
+        armConfig.Slot0.kV = 10.028;
+        armConfig.Slot0.kP = 20.0;
+        armConfig.Slot0.kI = 1.0;
         armConfig.Slot0.kD = 0.0;
         armConfig.MotionMagic.MotionMagicJerk = 0.0;
         // seems mechanism rotation not rotor position
@@ -70,7 +73,7 @@ public class Intaker extends SubsystemBase {
         mArmTalon.getConfigurator().apply(armConfig);
         mArmTalon.setPosition(IntakerConstants.REST_POSITION,Constants.kLongCANTimeoutSec);   
         mArmTalon.optimizeBusUtilization();
-        
+        mArmTalon.getPosition().setUpdateFrequency(Constants.kLongCANTimeoutMs);
         //roller configs
         TalonFXConfiguration rollerConfigs = new TalonFXConfiguration();
         rollerConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -92,20 +95,22 @@ public class Intaker extends SubsystemBase {
 
         if (angle_deg < IntakerConstants.REST_ANGLE || angle_deg > IntakerConstants.MAX_ANGLE){
           return;}
-
+        targetAngle = angle_deg;
         double angle_rotation = angle_deg / 360.0;
         mArmTalon.setControl(ArmMotionMagic.withPosition(angle_rotation)); // reuse previously created
         
         // ControlRequest Instance
       }
     
-      
+      public double getTargetAngle(){
+        return targetAngle;
+      }
       public void setRollerIntake() {
         mRollerTalon.setControl(IntakeVoltage.withOutput(6));
         // ControlRequest Instance
       }
       public void setRollerFeed() {
-        mRollerTalon.setControl(IntakeVoltage.withOutput(-3));
+        mRollerTalon.setControl(IntakeVoltage.withOutput(-12));
         // ControlRequest Instance
       }
       public double getRotation() {
@@ -133,11 +138,14 @@ public class Intaker extends SubsystemBase {
       }
       
     public void stop() {
-        mArmTalon.setPosition(IntakerConstants.FEED_POSITION);
+        setAngle(IntakerConstants.FEED_ANGLE);
         mRollerTalon.setControl(IntakeVoltage.withOutput(0.0));
     }
     public void stopRoller() {
         mRollerTalon.setControl(IntakeVoltage.withOutput(0.0));
+    }
+    public boolean isOmronDetected() {
+      return !mIntakeOmron.get();
     }
     @Override
     public void periodic() {
@@ -145,6 +153,7 @@ public class Intaker extends SubsystemBase {
       SmartDashboard.putNumber("target Position", getTargetAngleDeg());
       SmartDashboard.putNumber("Stator Current", getStatorCurrent());
       SmartDashboard.putNumber("Supply Current", getSupplyCurrent());
+      SmartDashboard.putBoolean("Omron", isOmronDetected());
     }
       @Override
   public void initSendable(SendableBuilder builder) {
@@ -153,6 +162,8 @@ public class Intaker extends SubsystemBase {
         getName() + "Intake Motor Control Request",
         () -> mArmTalon.getAppliedControl().toString(),
         null);
+    builder.addDoubleProperty("target", ()->getTargetAngleDeg(), null);
+    builder.addDoubleProperty("real", ()->getAngleDeg(), null);
 
 
   }

@@ -45,6 +45,6 @@ public class IntakeCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return isFinished;
+    return sIntaker.isOmronDetected();
   }
 }

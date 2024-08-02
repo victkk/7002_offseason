@@ -153,7 +153,7 @@ public final class Constants {
     public static final int INTAKER_CENTER_ID = 13;
     // used for LED to tell note entered state
     public static final int INTAKER_ENTER_OMRON_ID = 9;
-    public static final int INTAKE_EXTERIOR_ID = 30;
+
   }
 
   public static final class TransferConstants {
@@ -199,13 +199,13 @@ public final class Constants {
     public static final double MAX_POSITION = MAX_ANGLE / 360.0;
     public static final double ARM_GEAR_RATIO=24;
 
-    public static final double FEED_ANGLE=30.0;
+    public static final double FEED_ANGLE=20.0;
     public static final double FEED_POSITION = FEED_ANGLE / 360.0;
   }
   public static final class ShooterConstants {
-    public static final int SHOOTER_ID = 12;
-    public static final int SHOOTER_FOLLOWER = 15;
-    public static final double GEAR_RATIO = 1.6;
+    public static final int SHOOTER_ID = 11;
+    public static final int SHOOTER_FOLLOWER = 13;
+    public static final double GEAR_RATIO = 20/32;
   }
 
   public static final class VisionShootConstants {

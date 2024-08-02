@@ -71,7 +71,7 @@ public class RobotContainer {
   // private final ClimbCommand mClimbCommand = new ClimbCommand(sClimber, ()->{if(driverController.getRightX()>0.2)return driverController.getRightX()/5.0;else return 0.0;});
   private final IntakeCommand mIntakeCommand = new IntakeCommand(sIntaker);
   private final FeedCommand mFeedCommand = new FeedCommand(sIntaker);
-  private final ShootCommand mShootCommand = new ShootCommand(sShooter, 100);
+  private final ShootCommand mShootCommand = new ShootCommand(sShooter, 90);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -83,6 +83,7 @@ public class RobotContainer {
     SmartDashboard.putData(sDrivetrainSubsystem);
     SmartDashboard.putData(sIntaker);
     SmartDashboard.putData(mDriveWithRightStick);
+    SmartDashboard.putData(sShooter);
   }
 
   /**
@@ -110,7 +111,7 @@ public class RobotContainer {
     
     driverController.a().whileTrue(mIntakeCommand);
     driverController.x().whileTrue(mShootCommand.andThen(mFeedCommand)).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));
-    
+
       
   }
 

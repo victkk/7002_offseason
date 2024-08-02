@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.IntakerConstants;
 import frc.robot.subsystems.Intaker;
 
 public class FeedCommand extends Command {
@@ -11,13 +12,14 @@ public class FeedCommand extends Command {
     }
     @Override
     public void initialize() {
-        sIntaker.setAngle(30);
-        sIntaker.setRollerFeed();
+        sIntaker.setAngle(IntakerConstants.FEED_ANGLE);
+        
     }
 
     @Override
     public void execute(){
-
+        if(Math.abs(sIntaker.getAngleDeg()-sIntaker.getTargetAngle())<3)
+            sIntaker.setRollerFeed();
     }
     @Override
     public void end(boolean isInterrupted){

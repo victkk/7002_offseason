@@ -43,10 +43,10 @@ public class Intaker extends SubsystemBase {
         var armSoftLimitConf  = new SoftwareLimitSwitchConfigs();
         armConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         armConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        armSoftLimitConf.ForwardSoftLimitThreshold = IntakerConstants.REST_POSITION-0.05;
-        armSoftLimitConf.ForwardSoftLimitEnable = false;
-        armSoftLimitConf.ReverseSoftLimitThreshold = IntakerConstants.MAX_POSITION+0.05;
-        armSoftLimitConf.ReverseSoftLimitEnable = false;
+        armSoftLimitConf.ForwardSoftLimitThreshold =  IntakerConstants.MAX_POSITION+0.005;
+        armSoftLimitConf.ForwardSoftLimitEnable = true;
+        armSoftLimitConf.ReverseSoftLimitThreshold =IntakerConstants.REST_POSITION-0.005;
+        armSoftLimitConf.ReverseSoftLimitEnable = true;
         armConfig.SoftwareLimitSwitch = armSoftLimitConf;
         armConfig.Voltage.PeakForwardVoltage = 12.0;
         armConfig.Voltage.PeakReverseVoltage = -12.0;
@@ -59,14 +59,14 @@ public class Intaker extends SubsystemBase {
   
         armConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         armConfig.Slot0.kG = 0.3;
-        armConfig.Slot0.kV = 10.028;
-        armConfig.Slot0.kP = 20.0;
-        armConfig.Slot0.kI = 1.0;
+        armConfig.Slot0.kV = 3.028;
+        armConfig.Slot0.kP = 30.0;
+        armConfig.Slot0.kI = 3.0;
         armConfig.Slot0.kD = 0.0;
         armConfig.MotionMagic.MotionMagicJerk = 0.0;
         // seems mechanism rotation not rotor position
-        armConfig.MotionMagic.MotionMagicCruiseVelocity = 2.5;
-        armConfig.MotionMagic.MotionMagicAcceleration = 0.5;
+        armConfig.MotionMagic.MotionMagicCruiseVelocity = 5;
+        armConfig.MotionMagic.MotionMagicAcceleration = 2;
         armConfig.Feedback.SensorToMechanismRatio = IntakerConstants.ARM_GEAR_RATIO;
         
         mArmTalon.getConfigurator().apply(armConfig);

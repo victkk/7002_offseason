@@ -187,11 +187,11 @@ public final class Constants {
     public static final double MAX_POSITION = MAX_ANGLE / 360.0;
 
     //arm angle when the intaker feed to shooter
-    public static final double FEED_ANGLE=20.0;
+    public static final double FEED_ANGLE=25.0;
     public static final double FEED_POSITION = FEED_ANGLE / 360.0;
   
     //arm angle when the intaker intake
-    public static final double INTAKE_ANGLE=20.0;
+    public static final double INTAKE_ANGLE=175.0;
     public static final double INTAKE_POSITION = FEED_ANGLE / 360.0;
 
     //arm gear ratio

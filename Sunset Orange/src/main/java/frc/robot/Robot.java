@@ -86,7 +86,7 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     // m_robotContainer.sIntaker.setRollerIntake();
-    SmartDashboard.putString("test", "tets");
+    SmartDashboard.putString("test", "in test mode");
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

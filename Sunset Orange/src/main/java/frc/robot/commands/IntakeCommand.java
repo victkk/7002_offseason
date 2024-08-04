@@ -38,7 +38,7 @@ public class IntakeCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    sIntaker.setAngle(30);
+    sIntaker.setAngle(IntakerConstants.FEED_ANGLE);
     sIntaker.stopRoller();
   }
 

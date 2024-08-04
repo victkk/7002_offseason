@@ -24,6 +24,7 @@ import frc.robot.commands.FeedCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToAngleCommand;
+import frc.robot.commands.SuckFromSourceCommand;
 import frc.robot.lib6907.CommandSwerveController;
 import frc.robot.lib6907.CommandSwerveController.DriveMode;
 import frc.robot.subsystems.Climber;
@@ -65,13 +66,13 @@ public class RobotContainer {
   private final SnapToAngleCommand mDriveWithRightStick = new SnapToAngleCommand(
       sDrivetrainSubsystem,
       () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
-      () -> Optional.empty(),//driverController.getDriveRotationAngle(), // amp heading
+      () -> driverController.getDriveRotationAngle(), // amp heading
       () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
 
   // private final ClimbCommand mClimbCommand = new ClimbCommand(sClimber, ()->{if(driverController.getRightX()>0.2)return driverController.getRightX()/5.0;else return 0.0;});
   private final IntakeCommand mIntakeCommand = new IntakeCommand(sIntaker);
   private final FeedCommand mFeedCommand = new FeedCommand(sIntaker);
-  private final ShootCommand mShootCommand = new ShootCommand(sShooter, 90);
+  private final ShootCommand mShootCommand = new ShootCommand(sShooter,135);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -106,12 +107,13 @@ public class RobotContainer {
           sDrivetrainSubsystem.zeroHeading();
           driverController.setTranslationDirection(true);
         });
+    
     resetHeadingCommand.addRequirements(sDrivetrainSubsystem);
     driverController.start().onTrue(resetHeadingCommand);
     
     driverController.a().whileTrue(mIntakeCommand);
     driverController.x().whileTrue(mShootCommand.andThen(mFeedCommand)).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));
-
+    driverController.b().whileTrue(new SuckFromSourceCommand(sShooter,sIntaker));
       
   }
 

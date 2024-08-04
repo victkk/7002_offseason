@@ -7,8 +7,8 @@ public class Util {
 
   public static void checkReturn(String key, StatusCode code) {
     if (!code.isOK()) {
-      DriverStation.reportError(
-          String.format("[%s] %s: %s", key, code.getName(), code.getDescription()), null);
+      // DriverStation.reportError(
+      //     String.format("[%s] %s: %s", key, code.getName(), code.getDescription()), null);
     }
   }
 }

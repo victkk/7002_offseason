@@ -25,7 +25,8 @@ public class Shooter extends SubsystemBase {
     private final TalonFX mRightTalon;
     
   private final VelocityVoltage shooterTargetVelocity = new VelocityVoltage(0);
-
+    private final VelocityVoltage followerTargetVelocity = new VelocityVoltage(0);
+    private final VoltageOut shooterVoltageOut = new VoltageOut(0.0);
     public Shooter() {
         mLeftTalon = new TalonFX(ShooterConstants.SHOOTER_ID);
         mRightTalon = new TalonFX(ShooterConstants.SHOOTER_FOLLOWER);
@@ -45,8 +46,8 @@ public class Shooter extends SubsystemBase {
         shooterConfig.CurrentLimits.SupplyCurrentThreshold = 60.0;
         shooterConfig.CurrentLimits.SupplyTimeThreshold = 0.5;
         shooterConfig.Slot0.kV = 0.12;
-        shooterConfig.Slot0.kP = 0.45;//TODO tune
-        shooterConfig.Slot0.kI = 3.0;
+        shooterConfig.Slot0.kP = 0.25;//TODO tune
+        shooterConfig.Slot0.kI = 1.0;
         shooterConfig.Slot0.kD = 0.0;
         shooterConfig.Feedback.SensorToMechanismRatio = ShooterConstants.GEAR_RATIO;        
         mLeftTalon.getConfigurator().apply(shooterConfig);
@@ -64,15 +65,19 @@ public class Shooter extends SubsystemBase {
     }
     public void setSpeed(double target_rps){
         shooterTargetVelocity.Velocity = target_rps;
+        followerTargetVelocity.Velocity = target_rps;
         mLeftTalon.setControl(shooterTargetVelocity);
-        mRightTalon.setControl(shooterTargetVelocity);
+        mRightTalon.setControl(followerTargetVelocity);
     }
     public void stop() {
         mLeftTalon.setControl(Constants.NEUTRAL);
         mRightTalon.setControl(Constants.NEUTRAL);
     }
 
-
+    public void setMaxVoltage(){
+      mLeftTalon.setControl(shooterVoltageOut.withOutput(12));
+      mRightTalon.setControl(shooterVoltageOut.withOutput(12));
+    }
     public double getMainMotorVelocity() {
 
         return mLeftTalon.getVelocity().getValueAsDouble();

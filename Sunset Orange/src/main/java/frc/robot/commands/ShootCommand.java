@@ -23,7 +23,9 @@ public class ShootCommand extends Command {
 
     @Override
     public void initialize() {
-        sShooter.setSpeed(target_rps);
+        isFinished = false;
+        // sShooter.setSpeed(target_rps);
+        sShooter.setMaxVoltage();
         spinStablized = new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(),STABLIZE_TIME,EdgeType.RISING);
     }
 
@@ -31,12 +33,11 @@ public class ShootCommand extends Command {
     public void execute(){
         double mainMotorVelocity = sShooter.getMainMotorVelocity();
         double followerVelocity = sShooter.getFollowerVelocity();
-        SmartDashboard.putNumber("11",mainMotorVelocity);
-        SmartDashboard.putNumber("22",followerVelocity);
+
         
         if (
-                spinStablized.update(Timer.getFPGATimestamp(),mainMotorVelocity - target_rps >0
-                && Math.abs(followerVelocity - target_rps) > 0))
+                mainMotorVelocity - target_rps >0
+                && followerVelocity - target_rps > 0)
                 isFinished= true;
         
     }

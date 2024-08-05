@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
+import com.fasterxml.jackson.databind.ext.OptionalHandlerFactory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -46,9 +47,9 @@ import frc.robot.lib6907.swerve.SwerveKinematicLimits;
 import frc.robot.lib6907.swerve.SwerveSetpoint;
 import frc.robot.lib6907.swerve.SwerveSetpointGenerator;
 import frc.robot.utils.ChassisSpeedKalmanFilterSimplified;
-// import java.util.Optional;
-// import org.photonvision.EstimatedRobotPose;
-// import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import java.util.Optional;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -171,6 +172,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     builder.addDoubleProperty("PoseXMeter", () -> getPose().getX(), null);
     builder.addDoubleProperty("PoseYMeter", () -> getPose().getY(), null);
     builder.addDoubleProperty("PoseAngleDegree", () -> getPose().getRotation().getDegrees(), null);
+    
     builder.addDoubleProperty(
         "ChassisSpeed.omega", () -> mKinematicSpeed.omegaRadiansPerSecond, null);
     builder.addDoubleProperty(
@@ -184,7 +186,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     builder.addBooleanProperty("lightgate FR:", ()->mSwerveModules[1].checkLightGate(), null);
     builder.addBooleanProperty("lightgate BR:", ()->mSwerveModules[2].checkLightGate(), null);
     builder.addBooleanProperty("lightgate BL:", ()->mSwerveModules[3].checkLightGate(), null);
-    
+    builder.addDoubleProperty("gyro",()-> getGyroYaw().getDegrees(), null);
 
     builder.addDoubleArrayProperty(
         "target chassis speeds x y omega",
@@ -430,31 +432,32 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private double updateOdomFromVision() {
     synchronized (mEstimator) {
-      // Optional<EstimatedRobotPose> visionEstimatedPose =
-      //     ApriltagCoprocessor.getInstance()
-      //         .updateEstimatedGlobalPose(
-      //             mEstimator.getEstimatedPosition(),
-      //             new Translation2d(
-      //                 mFilteredSpeed.vxMetersPerSecond, mFilteredSpeed.vyMetersPerSecond));
+    
+      Optional<EstimatedRobotPose> visionEstimatedPose =
+          ApriltagCoprocessor.getInstance()
+              .updateEstimatedGlobalPose(
+                  mEstimator.getEstimatedPosition(),
+                  new Translation2d(
+                      mFilteredSpeed.vxMetersPerSecond, mFilteredSpeed.vyMetersPerSecond));
 
-      // if (visionEstimatedPose.isPresent()) {
-      //   Pose2d estimatedPose2d = visionEstimatedPose.get().estimatedPose.toPose2d();
-      //   double photonTimestamp = visionEstimatedPose.get().timestampSeconds;
-      //   double currentTimestamp = Timer.getFPGATimestamp();
-      //   photonLatency = currentTimestamp - photonTimestamp;
-      //   Pose2d useIMUPose2d =
-      //       new Pose2d(estimatedPose2d.getTranslation(), mHeading.get(photonTimestamp));
-      //   if (useIMUPose2d.getRotation() != null) {
-      //     if (visionEstimatedPose.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
-      //       mEstimator.addVisionMeasurement(
-      //           estimatedPose2d, photonTimestamp, VecBuilder.fill(0.1, 0.1, 0.1));
-      //     } else {
-      //       mEstimator.addVisionMeasurement(
-      //           useIMUPose2d, photonTimestamp, VecBuilder.fill(0.25, 0.25, 0.25));
-      //     }
-      //     return Timer.getFPGATimestamp();
-      //   }
-      // }
+      if (visionEstimatedPose.isPresent()) {
+        Pose2d estimatedPose2d = visionEstimatedPose.get().estimatedPose.toPose2d();
+        double photonTimestamp = visionEstimatedPose.get().timestampSeconds;
+        double currentTimestamp = Timer.getFPGATimestamp();
+        photonLatency = currentTimestamp - photonTimestamp;
+        Pose2d useIMUPose2d =
+            new Pose2d(estimatedPose2d.getTranslation(), mHeading.get(photonTimestamp));
+        if (useIMUPose2d.getRotation() != null) {
+          if (visionEstimatedPose.get().strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+            mEstimator.addVisionMeasurement(
+                estimatedPose2d, photonTimestamp, VecBuilder.fill(0.1, 0.1, 0.1));
+          } else {
+            mEstimator.addVisionMeasurement(
+                useIMUPose2d, photonTimestamp, VecBuilder.fill(0.25, 0.25, 0.25));
+          }
+          return Timer.getFPGATimestamp();
+        }
+      }
 
       // mHeading.clear(); no longer needs to clear as it is circular buffer
       return lastVisionOdomUpdateTime;

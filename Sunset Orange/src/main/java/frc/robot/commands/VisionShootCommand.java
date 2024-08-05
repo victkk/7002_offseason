@@ -1,20 +1,29 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.IntakerConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.VisionShootConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.Intaker;
+import frc.robot.subsystems.Shooter;
+
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-public class SnapToAngleCommand extends Command {
+public class VisionShootCommand extends Command {
 
   private final TrapezoidProfile.Constraints swerveRotateConstraints =
       new TrapezoidProfile.Constraints(Units.degreesToRadians(360), Units.degreesToRadians(540));
@@ -23,14 +32,15 @@ public class SnapToAngleCommand extends Command {
   // new ProfiledPIDController(4.0, 0, 0.2, swerveRotateConstraints);
 
   private final DrivetrainSubsystem mDrivetrainSubsystem;
+  private final Shooter mShooter;
+  private final Intaker mIntaker;
+
   private final Supplier<Translation2d> driveVectorSupplier;
   /*
    * Getting the angular velocity from the product of the joysticks (Right X) and the max angular velocity
    */
-  private final BooleanSupplier interruptSupplier;
   private final BooleanSupplier robotCentricSupplier;
-  private final Supplier<Optional<Rotation2d>> goalHeadingSupplier;
-  private Optional<Rotation2d> goalHeading = Optional.empty();
+  private Rotation2d goalHeading;
   /**
    * The default drive command constructor
    *
@@ -40,33 +50,20 @@ public class SnapToAngleCommand extends Command {
    * @param yVelocitySupplier Gets the joystick value for the y velocity and multiplies it by the
    *     max velocity
    */
-  public SnapToAngleCommand(
+  public VisionShootCommand(
       DrivetrainSubsystem drivetrainSubsystem,
+      Shooter shooter,
+      Intaker intaker,
       Supplier<Translation2d> driveVectorSupplier,
-      Supplier<Optional<Rotation2d>> goalHeadingSupplier,
-      BooleanSupplier robotCentricSupplier,
-      BooleanSupplier interruptSupplier) {
-    this.setName("snapToAmp");
+      BooleanSupplier robotCentricSupplier) {
+    this.setName("VisionShootCommand");
     mDrivetrainSubsystem = drivetrainSubsystem;
+    mIntaker = intaker;
+    mShooter = shooter;
     this.driveVectorSupplier = driveVectorSupplier;
     this.robotCentricSupplier = robotCentricSupplier;
-    this.goalHeadingSupplier = goalHeadingSupplier;
-    this.interruptSupplier = interruptSupplier;
+    goalHeading = new Rotation2d(getGoalToRobot().getX(),getGoalToRobot().getY());
     addRequirements(drivetrainSubsystem); // required for default command
-  }
-
-  public SnapToAngleCommand(
-      DrivetrainSubsystem drivetrainSubsystem,
-      Supplier<Translation2d> driveVectorSupplier,
-      Supplier<Optional<Rotation2d>> goalHeadingSupplier,
-      BooleanSupplier robotCentricSupplier) {
-    this(
-        drivetrainSubsystem,
-        driveVectorSupplier,
-        goalHeadingSupplier,
-        robotCentricSupplier,
-        () -> false);
-    this.setName("driveWithRightStick");
   }
 
   
@@ -75,21 +72,21 @@ public class SnapToAngleCommand extends Command {
     snapToAnglePID.reset(mDrivetrainSubsystem.getHeading().getRadians());
     snapToAnglePID.enableContinuousInput(-Math.PI, Math.PI);
     snapToAnglePID.setGoal(mDrivetrainSubsystem.getHeading().getRadians());
-    snapToAnglePID.setTolerance(0.5 / Math.PI * 180);
+    snapToAnglePID.setTolerance(0.05);
+    
   }
 
   @Override
   public void execute() {
     // Running the lambda statements and getting the velocity values
 
+    mShooter.setMaxVoltage();
     Translation2d driveVector =
         driveVectorSupplier
             .get()
             .times(DriveConstants.kTeleDriveMaxSpeedMetersPerSecond); // -1~1 to meters per second
-    goalHeading = goalHeadingSupplier.get();
-    if (goalHeading.isPresent()) {
-      snapToAnglePID.setGoal(goalHeading.get().getRadians());
-    }
+    goalHeading = new Rotation2d(getGoalToRobot().getX(),getGoalToRobot().getY());
+    snapToAnglePID.setGoal(goalHeading.getRadians());
     mDrivetrainSubsystem.drive(
         driveVector,
         snapToAnglePID.atGoal()
@@ -97,16 +94,25 @@ public class SnapToAngleCommand extends Command {
             : snapToAnglePID.calculate(mDrivetrainSubsystem.getHeading().getRadians())
                 + snapToAnglePID.getSetpoint().velocity, // output is in radians per second
         !robotCentricSupplier.getAsBoolean());
+
+        if(isAligned()&& mShooter.getMainMotorVelocity() - ShooterConstants.VISION_RPS >0
+        && mShooter.getFollowerVelocity()- ShooterConstants.VISION_RPS > 0){
+            mIntaker.setRollerFeed();
+        }
   }
 
   @Override
   public void end(boolean interrupted) {
     mDrivetrainSubsystem.drive(new Translation2d(0, 0), 0, true);
-  }
+    mShooter.stop();
+    mIntaker.setAngle(IntakerConstants.FEED_ANGLE);
+    mIntaker.stopRoller();
+}
 
   @Override
   public boolean isFinished() {
-    return interruptSupplier.getAsBoolean();
+    return false;
+    // return isAligned();
   }
 
   @Override
@@ -114,18 +120,37 @@ public class SnapToAngleCommand extends Command {
     super.initSendable(builder);
     builder.addDoubleProperty(
         "target heading error", () -> snapToAnglePID.getPositionError(), null);
-    builder.addBooleanProperty("rightStickInputPresent:", () -> goalHeading.isPresent(), null);
-  }
+ }
 
   public boolean isAligned() {
-    if (goalHeading.isEmpty()) {
-      return false;
-    }
+
     double headingError =
         Rotation2d.fromRadians(snapToAnglePID.getGoal().position)
-            .minus(goalHeading.get())
+            .minus(goalHeading)
             .getDegrees();
     SmartDashboard.putNumber("heading error", headingError);
     return Math.abs(headingError) < 2.0;
+  }
+    /**
+   * Calculates the Goal Position relative to robot, in field's coordinate system. If drivetrain is
+   * moving, then we need to offset the goal position by a position vector which is time of note fly
+   * times the robot's velocity
+   *
+   * @return goal position relative to robot, in field's coordinate system, unit is meter.
+   */
+  private Translation2d getGoalToRobot() {
+    Translation2d robotToField = mDrivetrainSubsystem.getPose().getTranslation();
+    Optional<Alliance> a = DriverStation.getAlliance();
+    if (a.isEmpty()) {
+      a=Optional.of(Alliance.Blue);
+    }
+
+    Translation2d goalToField =
+        a.get() == Alliance.Red
+            ? VisionShootConstants.kRedSpeaker
+            : VisionShootConstants.kBlueSpeaker;
+
+    Translation2d goalToRobot = goalToField.minus(robotToField);
+    return goalToRobot;
   }
 }

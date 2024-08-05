@@ -26,7 +26,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class ApriltagCoprocessor extends SubsystemBase {
-  private static final String SHOOTER_CAMERA_NAME = "TagCamShooterSide";
+  private static final String SHOOTER_CAMERA_NAME = "ShooterSideCam";
   private static final double ACCEPTABLE_AMBIGUITY_THRESHOLD = 0.15;
   private static final double MULTI_TAG_DELAY = 0.5;
   private static final double MIN_TARGET_AREA = 0.08;
@@ -91,7 +91,7 @@ public class ApriltagCoprocessor extends SubsystemBase {
               .getTable("SmartDashboard")
               .getStructTopic("Shooter Side Estimated Pose", Pose3d.struct)
               .publish();
-
+      logToSmartDashboard("ApriltagCoprocessor Init Error", "successful");
     } catch (Exception e) {
       logToSmartDashboard("ApriltagCoprocessor Init Error", e.getMessage());
       throw new RuntimeException("Failed to initialize ApriltagCoprocessor", e);

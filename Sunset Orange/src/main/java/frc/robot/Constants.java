@@ -45,8 +45,8 @@ public final class Constants {
       FL.driveID = 6;
       FL.azimuthID = 7;
       FL.azimuthBlockCenterDegree = 105.0;
-      FL.azimuthEncoderOffsetRotation = -0.038574;
-      FL.lightGateID = 1;
+      FL.azimuthEncoderOffsetRotation = -0.047607;
+      FL.lightGateID = 0;
       FL.corner = ModuleCorner.Front_Left;
       FL.invertDrive = InvertedValue.CounterClockwise_Positive;
       FL.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -63,8 +63,8 @@ public final class Constants {
       FR.driveID = 4;
       FR.azimuthID = 5;
       FR.azimuthBlockCenterDegree = 0.0;
-      FR.azimuthEncoderOffsetRotation = -0.035400;
-      FR.lightGateID = 2;
+      FR.azimuthEncoderOffsetRotation = 0.131836;
+      FR.lightGateID = 1;
       FR.corner = ModuleCorner.Front_Right;
       FR.invertDrive = InvertedValue.CounterClockwise_Positive;
       FR.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -81,8 +81,8 @@ public final class Constants {
       BL.driveID = 2;
       BL.azimuthID = 3;
       BL.azimuthBlockCenterDegree = 0.0;
-      BL.azimuthEncoderOffsetRotation = 0.666504;
-      BL.lightGateID = 0;
+      BL.azimuthEncoderOffsetRotation = -0.479980;
+      BL.lightGateID = 2;
       BL.corner = ModuleCorner.Back_Left;
       BL.invertDrive = InvertedValue.Clockwise_Positive;
       BL.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -99,8 +99,8 @@ public final class Constants {
       BR.driveID = 0;
       BR.azimuthID = 1;
       BR.azimuthBlockCenterDegree = 105.0;
-      BR.azimuthEncoderOffsetRotation = 0.075684;
-      BR.lightGateID = 3;//4;
+      BR.azimuthEncoderOffsetRotation = 0.406006;
+      BR.lightGateID = 3;
       BR.corner = ModuleCorner.Back_Right;
       BR.invertDrive = InvertedValue.Clockwise_Positive;
       BR.invertAzimuth = InvertedValue.CounterClockwise_Positive;
@@ -192,18 +192,26 @@ public final class Constants {
   
     //arm angle when the intaker intake
     public static final double INTAKE_ANGLE=175.0;
-    public static final double INTAKE_POSITION = FEED_ANGLE / 360.0;
+    public static final double INTAKE_POSITION = INTAKE_ANGLE/360.0;                                                   
 
+    public static final double AMP_ANGLE=175.0;
+    public static final double AMP_POSITION = AMP_ANGLE / 360.0;
     //arm gear ratio
     public static final double ARM_GEAR_RATIO=24;
 
     // used for stop intaking
     public static final int INTAKER_ENTER_OMRON_ID = 9;
+
+    //roller
+    public static final double ROLLER_FEED_VOLTAGE=-12;
+    public static final double ROLLER_INTAKE_VOLTAGE=6;
+    public static final double ROLLER_AMP_VOLTAGE=-12;
   }
   public static final class ShooterConstants {
     public static final int SHOOTER_ID = 11;
     public static final int SHOOTER_FOLLOWER = 13;
     public static final double GEAR_RATIO = 20.0/32.0;
+    public static final double VISION_RPS = 130;
   }
 
   public static final class VisionShootConstants {

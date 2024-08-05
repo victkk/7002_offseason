@@ -14,9 +14,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.IntakerConstants;
 import frc.robot.auto.modes.*;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DriveWithTriggerCommand;
@@ -25,8 +27,10 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToAngleCommand;
 import frc.robot.commands.SuckFromSourceCommand;
+import frc.robot.commands.VisionShootCommand;
 import frc.robot.lib6907.CommandSwerveController;
 import frc.robot.lib6907.CommandSwerveController.DriveMode;
+import frc.robot.subsystems.ApriltagCoprocessor;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.Intaker;
@@ -68,11 +72,17 @@ public class RobotContainer {
       () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
       () -> driverController.getDriveRotationAngle(), // amp heading
       () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
-
-  // private final ClimbCommand mClimbCommand = new ClimbCommand(sClimber, ()->{if(driverController.getRightX()>0.2)return driverController.getRightX()/5.0;else return 0.0;});
+    
+  private final DriveWithTriggerCommand mDriveWithTriggerCommand = new DriveWithTriggerCommand(sDrivetrainSubsystem,
+      () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
+      () -> driverController.getRawRotationRate(), // amp heading
+      () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
+  
+  private final VisionShootCommand mVisionShootCommand  =new VisionShootCommand(sDrivetrainSubsystem,sShooter,sIntaker,() -> driverController.getDriveTranslation(driverController.isRobotRelative()) , () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
+      // private final ClimbCommand mClimbCommand = new ClimbCommand(sClimber, ()->{if(driverController.getRightX()>0.2)return driverController.getRightX()/5.0;else return 0.0;});
   private final IntakeCommand mIntakeCommand = new IntakeCommand(sIntaker);
   private final FeedCommand mFeedCommand = new FeedCommand(sIntaker);
-  private final ShootCommand mShootCommand = new ShootCommand(sShooter,135);
+  private final ShootCommand mShootCommand = new ShootCommand(sShooter,130);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -83,8 +93,10 @@ public class RobotContainer {
     pushChooser();
     SmartDashboard.putData(sDrivetrainSubsystem);
     SmartDashboard.putData(sIntaker);
-    SmartDashboard.putData(mDriveWithRightStick);
+    SmartDashboard.putData(mDriveWithTriggerCommand);
     SmartDashboard.putData(sShooter);
+
+    ApriltagCoprocessor.getInstance().setLoggingEnabled(true);
   }
 
   /**
@@ -110,12 +122,18 @@ public class RobotContainer {
     
     resetHeadingCommand.addRequirements(sDrivetrainSubsystem);
     driverController.start().onTrue(resetHeadingCommand);
-    
-    driverController.a().whileTrue(mIntakeCommand);
-    driverController.x().whileTrue(mShootCommand.andThen(mFeedCommand)).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));
-    driverController.b().whileTrue(new SuckFromSourceCommand(sShooter,sIntaker));
-      
-  }
+    new Trigger(() -> driverController.getRawRotationRate() != 0.0).whileTrue(mDriveWithTriggerCommand);
+    operatorController.a().whileTrue(mIntakeCommand);
+    operatorController.x().whileTrue(mShootCommand.andThen(mFeedCommand)).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));
+    operatorController.b().whileTrue(new SuckFromSourceCommand(sShooter,sIntaker));
+    operatorController.y().whileTrue(new InstantCommand(()->sIntaker.setAngle(IntakerConstants.AMP_ANGLE)).andThen(new WaitCommand(1.0)).andThen(new InstantCommand(()->sIntaker.setRollerAmp()))).onFalse(new InstantCommand(()->sIntaker.stop()));
+    driverController.x().whileTrue(mVisionShootCommand);
+    // driverController.a().whileTrue(new SnapToAngleCommand(
+    //   sDrivetrainSubsystem,
+    //   () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
+    //   () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED)
+    //   );
+      }
 
 
   /**

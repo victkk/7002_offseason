@@ -60,6 +60,6 @@ public class DriveWithTriggerCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return angularVelocity == 0.0;
+    return false;
   }
 }

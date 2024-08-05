@@ -268,13 +268,10 @@ public class SwerveDriveModule {
   }
 
   public boolean checkLightGate() {
-    if(mConfig.lightGateID==2) //todo: lightgate 2 is broken... 
-      return mLightGate.get(); // depend on the connection + -
-    else
-      return !mLightGate.get();
-    }
 
-  /**
+      return !mLightGate.get();
+  }
+    /**
    * Stops the motor and calibrates the module based on current pos sets the motor to neutral and
    * adjusts the azimuth encoder offset rotation to align with the desired block center degree
    */

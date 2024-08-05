@@ -76,7 +76,7 @@ public class Intaker extends SubsystemBase {
         //roller configs
         TalonFXConfiguration rollerConfigs = new TalonFXConfiguration();
         rollerConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        rollerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        rollerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         rollerConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
         rollerConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
         rollerConfigs.Voltage.PeakForwardVoltage = 12.0;
@@ -103,12 +103,19 @@ public class Intaker extends SubsystemBase {
     
 
       public void setRollerIntake() {
-        mRollerTalon.setControl(IntakeVoltage.withOutput(6));
+        mRollerTalon.setControl(IntakeVoltage.withOutput(IntakerConstants.ROLLER_INTAKE_VOLTAGE));
         // ControlRequest Instance
       }
       public void setRollerFeed() {
-        mRollerTalon.setControl(IntakeVoltage.withOutput(-12));
+        mRollerTalon.setControl(IntakeVoltage.withOutput(IntakerConstants.ROLLER_FEED_VOLTAGE));
         // ControlRequest Instance
+      }
+      public void setRollerAmp() {
+        mRollerTalon.setControl(IntakeVoltage.withOutput(IntakerConstants.ROLLER_AMP_VOLTAGE));
+        // ControlRequest Instance
+      }
+      public void setRollerVoltage(double voltage){
+        mRollerTalon.setControl(IntakeVoltage.withOutput(voltage));
       }
       public double getRotation() {
         return mArmTalon.getPosition().getValueAsDouble();

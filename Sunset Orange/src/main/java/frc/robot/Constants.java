@@ -194,7 +194,7 @@ public final class Constants {
     public static final double INTAKE_ANGLE=175.0;
     public static final double INTAKE_POSITION = INTAKE_ANGLE/360.0;                                                   
 
-    public static final double AMP_ANGLE=175.0;
+    public static final double AMP_ANGLE=85.0;
     public static final double AMP_POSITION = AMP_ANGLE / 360.0;
     //arm gear ratio
     public static final double ARM_GEAR_RATIO=24;
@@ -204,8 +204,8 @@ public final class Constants {
 
     //roller
     public static final double ROLLER_FEED_VOLTAGE=-12;
-    public static final double ROLLER_INTAKE_VOLTAGE=6;
-    public static final double ROLLER_AMP_VOLTAGE=-12;
+    public static final double ROLLER_INTAKE_VOLTAGE=12;
+    public static final double ROLLER_AMP_VOLTAGE=-3.8;
   }
   public static final class ShooterConstants {
     public static final int SHOOTER_ID = 11;

@@ -17,7 +17,7 @@ public class FeedCommand extends Command {
     @Override
     public void initialize() {
         sIntaker.setAngle(IntakerConstants.FEED_ANGLE);
-        spinStablized=new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), 0.1, EdgeType.RISING);
+        spinStablized=new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), 0.06, EdgeType.RISING);
     }
 
     @Override

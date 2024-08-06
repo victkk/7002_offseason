@@ -75,7 +75,7 @@ public class SnapToAngleCommand extends Command {
     snapToAnglePID.reset(mDrivetrainSubsystem.getHeading().getRadians());
     snapToAnglePID.enableContinuousInput(-Math.PI, Math.PI);
     snapToAnglePID.setGoal(mDrivetrainSubsystem.getHeading().getRadians());
-    snapToAnglePID.setTolerance(0.5 / Math.PI * 180);
+    snapToAnglePID.setTolerance(0.01);
   }
 
   @Override
@@ -122,7 +122,7 @@ public class SnapToAngleCommand extends Command {
       return false;
     }
     double headingError =
-        Rotation2d.fromRadians(snapToAnglePID.getGoal().position)
+        mDrivetrainSubsystem.getPose().getRotation()
             .minus(goalHeading.get())
             .getDegrees();
     SmartDashboard.putNumber("heading error", headingError);

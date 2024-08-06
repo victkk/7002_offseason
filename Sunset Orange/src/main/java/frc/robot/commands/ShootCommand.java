@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ShootCommand extends Command {
     Shooter sShooter;
     double target_rps;
-    private static final double STABLIZE_TIME = 0.1;
+    // private static final double STABLIZE_TIME = 0.1;
 
     private boolean isFinished = false;
-    private DualEdgeDelayedBoolean spinStablized =
-        new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), STABLIZE_TIME, EdgeType.RISING);
+    // private DualEdgeDelayedBoolean spinStablized =
+    //     new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), STABLIZE_TIME, EdgeType.RISING);
     public ShootCommand(Shooter shooter,double target_rps){
         sShooter = shooter;
         this.target_rps = target_rps;
@@ -24,9 +24,8 @@ public class ShootCommand extends Command {
     @Override
     public void initialize() {
         isFinished = false;
-        // sShooter.setSpeed(target_rps);
         sShooter.setMaxVoltage();
-        spinStablized = new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(),STABLIZE_TIME,EdgeType.RISING);
+        // spinStablized = new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(),STABLIZE_TIME,EdgeType.RISING);
     }
 
     @Override

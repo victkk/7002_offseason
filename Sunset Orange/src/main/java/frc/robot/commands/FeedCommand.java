@@ -9,7 +9,8 @@ import frc.robot.subsystems.Intaker;
 
 public class FeedCommand extends Command {
     Intaker sIntaker;
-     private DualEdgeDelayedBoolean spinStablized;
+     private DualEdgeDelayedBoolean armStablized;
+     private DualEdgeDelayedBoolean ringStablized;
     public FeedCommand(Intaker intaker){
         sIntaker = intaker;
         addRequirements(sIntaker);
@@ -17,17 +18,21 @@ public class FeedCommand extends Command {
     @Override
     public void initialize() {
         sIntaker.setAngle(IntakerConstants.FEED_ANGLE);
-        spinStablized=new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), 0.06, EdgeType.RISING);
+        armStablized=new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), 0.06, EdgeType.RISING);
+        ringStablized=new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), 0.03, EdgeType.RISING);
     }
 
     @Override
     public void execute(){
-        if(spinStablized.update(Timer.getFPGATimestamp(),Math.abs(sIntaker.getAngleDeg()-sIntaker.getTargetAngleDeg())<2))
+        if(armStablized.update(Timer.getFPGATimestamp(),Math.abs(sIntaker.getAngleDeg()-sIntaker.getTargetAngleDeg())<2))
             sIntaker.setRollerFeed();
     }
     @Override
     public void end(boolean isInterrupted){
         sIntaker.stopRoller();
     }
-    
+    @Override
+    public boolean isFinished() {
+        return ringStablized.update(Timer.getFPGATimestamp(),!sIntaker.isOmronDetected());
+    }
 }

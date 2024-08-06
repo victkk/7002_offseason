@@ -127,12 +127,9 @@ public class RobotContainer {
     operatorController.x().whileTrue(mShootCommand.andThen(mFeedCommand)).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));
     operatorController.b().whileTrue(new SuckFromSourceCommand(sShooter,sIntaker));
     operatorController.y().whileTrue(new InstantCommand(()->sIntaker.setAngle(IntakerConstants.AMP_ANGLE)).andThen(new WaitCommand(1.0)).andThen(new InstantCommand(()->sIntaker.setRollerAmp()))).onFalse(new InstantCommand(()->sIntaker.stop()));
+    
     driverController.x().whileTrue(mVisionShootCommand);
-    // driverController.a().whileTrue(new SnapToAngleCommand(
-    //   sDrivetrainSubsystem,
-    //   () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
-    //   () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED)
-    //   );
+
       }
 
 

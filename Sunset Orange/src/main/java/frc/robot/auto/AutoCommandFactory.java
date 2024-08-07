@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.PathfindConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.FeedCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
@@ -31,26 +32,35 @@ public class AutoCommandFactory {
                     returnPath = returnPath.flipPath();
                   }
         
-        
-        
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
-                AutoBuilder.pathfindThenFollowPath(startPath,PathfindConstants.constraints),
+                AutoBuilder.followPath(startPath),
                 new IntakeCommand(mIntaker)
                 ),
             new ParallelCommandGroup(
-                AutoBuilder.pathfindThenFollowPath(returnPath,PathfindConstants.constraints),
-                new ShootCommand(mShooter, 130)
+                AutoBuilder.followPath(returnPath),
+                new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)
             ),
             new FeedCommand(mIntaker)
         );
     }
 
 
-    public static Command zeroAndShootPreload(DrivetrainSubsystem mDrivetrainSubsystem,Intaker mIntaker,Shooter mShooter){
+    public static Command zeroAndShootPreload(DrivetrainSubsystem mDrivetrainSubsystem,Intaker mIntaker,Shooter mShooter,String StartingPath){
+        Optional<Alliance> currentAlliance = DriverStation.getAlliance();
+        PathPlannerPath path = PathPlannerPath.fromPathFile(StartingPath);
+        
+        if (currentAlliance.isPresent() && currentAlliance.get() == Alliance.Red) {
+        path = path.flipPath();
+        }
+        
+        
         return new ParallelCommandGroup(
-                mDrivetrainSubsystem.runZeroingCommand(),
-                new ShootCommand(mShooter, 130).
+                new SequentialCommandGroup(
+                    mDrivetrainSubsystem.runZeroingCommand(),
+                    AutoBuilder.pathfindToPose(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints)
+                ),
+                new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS).
                     andThen(new FeedCommand(mIntaker))
         );
     }

@@ -213,7 +213,10 @@ public final class Constants {
     public static final int SHOOTER_ID = 11;
     public static final int SHOOTER_FOLLOWER = 13;
     public static final double GEAR_RATIO = 20.0/32.0;
-    public static final double VISION_RPS = 130;
+    public static final double SHOOT_RPS = 100;
+
+    public static final double VISION_RPS = 100;
+
   }
 
   public static final class VisionShootConstants {

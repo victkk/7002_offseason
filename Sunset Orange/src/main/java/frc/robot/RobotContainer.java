@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakerConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.auto.modes.*;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DriveWithTriggerCommand;
@@ -37,6 +39,8 @@ import frc.robot.subsystems.Intaker;
 import frc.robot.subsystems.Shooter;
 import frc.robot.utils.ShootingParameters;
 import java.util.Optional;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -73,6 +77,18 @@ public class RobotContainer {
       () -> driverController.getDriveRotationAngle(), // amp heading
       () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
     
+  private final SnapToAngleCommand mSnapToSource = new SnapToAngleCommand(
+      sDrivetrainSubsystem,
+      () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
+      () -> DriverStation.getAlliance().get()==Alliance.Blue?Optional.of(new Rotation2d(90.0)):Optional.of(new Rotation2d(90.0)), // amp heading
+      () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
+
+  private final SnapToAngleCommand mSnapToAmp = new SnapToAngleCommand(
+      sDrivetrainSubsystem,
+      () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
+      () -> Optional.of(new Rotation2d(90.0)), // amp heading
+      () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
+
   private final DriveWithTriggerCommand mDriveWithTriggerCommand = new DriveWithTriggerCommand(sDrivetrainSubsystem,
       () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
       () -> driverController.getRawRotationRate(), // amp heading
@@ -82,7 +98,7 @@ public class RobotContainer {
       // private final ClimbCommand mClimbCommand = new ClimbCommand(sClimber, ()->{if(driverController.getRightX()>0.2)return driverController.getRightX()/5.0;else return 0.0;});
   private final IntakeCommand mIntakeCommand = new IntakeCommand(sIntaker);
   private final FeedCommand mFeedCommand = new FeedCommand(sIntaker);
-  private final ShootCommand mShootCommand = new ShootCommand(sShooter,130);
+  private final ShootCommand mShootCommand = new ShootCommand(sShooter,ShooterConstants.SHOOT_RPS);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -129,7 +145,8 @@ public class RobotContainer {
     operatorController.y().whileTrue(new InstantCommand(()->sIntaker.setAngle(IntakerConstants.AMP_ANGLE)).andThen(new WaitCommand(1.0)).andThen(new InstantCommand(()->sIntaker.setRollerAmp()))).onFalse(new InstantCommand(()->sIntaker.stop()));
     
     driverController.x().whileTrue(mVisionShootCommand);
-
+    driverController.a().whileTrue(mSnapToAmp);
+    driverController.b().whileTrue(mSnapToSource.alongWith(new SuckFromSourceCommand(sShooter, sIntaker)));
       }
 
 
@@ -150,8 +167,7 @@ public class RobotContainer {
   public void pushChooser() {
     // init points
     mChooser = new SendableChooser<>();
-
-
+    mChooser.addOption("33", new mid33AutoCommand(sDrivetrainSubsystem, sIntaker, sShooter));
 
     SmartDashboard.putData("AUTO CHOICES", mChooser);
   }

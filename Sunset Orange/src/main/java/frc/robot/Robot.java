@@ -101,6 +101,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_robotContainer.checkDrivetrainZeroing();
+    m_robotContainer.sShooter.stop();
   }
 
   /** This function is called periodically during operator control. */

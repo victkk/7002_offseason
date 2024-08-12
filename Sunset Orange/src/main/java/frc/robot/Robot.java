@@ -5,9 +5,6 @@
 package frc.robot;
 
 import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
@@ -33,6 +30,9 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  private Thread m_visionThread;
+  private volatile boolean keepRunning = true; // 控制线程是否继续运行
+
   public Robot() {
     super(Constants.kPeriodicDt);
   }
@@ -49,7 +49,38 @@ public class Robot extends TimedRobot {
     FollowPathCommand.warmupCommand().schedule();
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());  
-}
+
+
+    m_visionThread = new Thread(() -> {
+      try {
+        UsbCamera camera = CameraServer.startAutomaticCapture();
+        camera.setResolution(640, 480);
+
+        CvSink cvSink = CameraServer.getVideo();
+        CvSource outputStream = CameraServer.putVideo("Raw Image", 640, 480);
+
+        Mat mat = new Mat();
+
+        while (keepRunning) {
+          if (cvSink.grabFrame(mat) == 0) {
+            outputStream.notifyError(cvSink.getError());
+            continue;
+          }
+
+          // 直接将原始图像发送到Dashboard
+          outputStream.putFrame(mat);
+        }
+      } finally {
+        // 保证资源被释放
+        keepRunning = false;
+      }
+    });
+
+    m_visionThread.setDaemon(true);
+    m_visionThread.start();
+  }
+
+
 
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -69,7 +100,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    // 当机器人进入disabled模式时，停止线程
+    keepRunning = false;
+    m_visionThread.interrupt();
+  }
 
   @Override
   public void disabledPeriodic() {}

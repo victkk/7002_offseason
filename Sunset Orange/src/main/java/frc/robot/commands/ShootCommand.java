@@ -24,7 +24,7 @@ public class ShootCommand extends Command {
     @Override
     public void initialize() {
         isFinished = false;
-        sShooter.setMaxVoltage();
+        sShooter.setSpeed(target_rps);
         // spinStablized = new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(),STABLIZE_TIME,EdgeType.RISING);
     }
 

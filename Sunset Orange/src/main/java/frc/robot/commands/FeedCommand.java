@@ -18,8 +18,8 @@ public class FeedCommand extends Command {
     @Override
     public void initialize() {
         sIntaker.setAngle(IntakerConstants.FEED_ANGLE);
-        armStablized=new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), 0.06, EdgeType.RISING);
-        ringStablized=new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), 0.01, EdgeType.RISING);
+        armStablized=new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), 0.2, EdgeType.RISING);
+        ringStablized=new DualEdgeDelayedBoolean(Timer.getFPGATimestamp(), 0.04, EdgeType.RISING);
     }
 
     @Override

@@ -154,6 +154,7 @@ public class RobotContainer {
   public void pushChooser() {
     // init points
     mChooser = new SendableChooser<>();
+    mChooser.addOption("example", new TestAutoCommand(sDrivetrainSubsystem));
     mChooser.addOption("33", new mid33AutoCommand(sDrivetrainSubsystem, sIntaker, sShooter));
 
     SmartDashboard.putData("AUTO CHOICES", mChooser);

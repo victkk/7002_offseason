@@ -27,10 +27,10 @@ public class AutoCommandFactory {
                   PathPlannerPath startPath = PathPlannerPath.fromPathFile(Path1);
                   PathPlannerPath returnPath = PathPlannerPath.fromPathFile(Path2);
                   
-                  if (currentAlliance.isPresent() && currentAlliance.get() == Alliance.Red) {
-                    startPath = startPath.flipPath();
-                    returnPath = returnPath.flipPath();
-                  }
+                //   if (currentAlliance.isPresent() && currentAlliance.get() == Alliance.Red) {
+                //     startPath = startPath.flipPath();
+                //     returnPath = returnPath.flipPath();
+                //   }
         
         return new SequentialCommandGroup(
             new ParallelDeadlineGroup(
@@ -41,27 +41,23 @@ public class AutoCommandFactory {
                 AutoBuilder.followPath(returnPath),
                 new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)
             ),
-            new FeedCommand(mIntaker)
+            new FeedCommand(mIntaker),
+            new InstantCommand(()->{mShooter.stop();mIntaker.stop();})
         );
     }
 
 
     public static Command zeroAndShootPreload(DrivetrainSubsystem mDrivetrainSubsystem,Intaker mIntaker,Shooter mShooter,String StartingPath){
-        Optional<Alliance> currentAlliance = DriverStation.getAlliance();
         PathPlannerPath path = PathPlannerPath.fromPathFile(StartingPath);
-        
-        if (currentAlliance.isPresent() && currentAlliance.get() == Alliance.Red) {
-        path = path.flipPath();
-        }
         
         
         return new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     mDrivetrainSubsystem.runZeroingCommand(),
-                    AutoBuilder.pathfindToPose(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints)
+                    AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints)
                 ),
                 new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS).
-                    andThen(new FeedCommand(mIntaker))
+                    andThen(new FeedCommand(mIntaker)).andThen(new InstantCommand(()->{mShooter.stop();mIntaker.stop();}))
         );
     }
 }

@@ -14,7 +14,7 @@ import java.util.Optional;
  */
 public class CommandSwerveController extends CommandXboxController {
   private static final double JOYSTICK_DEADBAND = 0.05;
-  private static final double TRANSLATION_DEADBAND = 0.1; // percent
+  private static final double TRANSLATION_DEADBAND = 0.05; // percent
   private static final double ROTATION_DEADBAND = 0.85; // percent
   private static final double NEAR_POLE_DRIVE_DEGREES = 7;
   private static final double NEAR_POLE_TURN_DEGREES = 7;
@@ -56,15 +56,15 @@ public class CommandSwerveController extends CommandXboxController {
     // this prevents the target velocity increase to fast, but should be included in setpoint
     // generator already
     double speedMultiplier = slowMode() ? 0.4 : 1.0;
-    xSpeed = translationXRateLimiter.calculate(xSpeed * speedMultiplier);
-    ySpeed = translationYRateLimiter.calculate(ySpeed * speedMultiplier);
+    xSpeed = translationXRateLimiter.calculate(xSpeed);
+    ySpeed = translationYRateLimiter.calculate(ySpeed);
 
     Translation2d translation = new Translation2d(xSpeed, ySpeed);
 
     if (translation.getNorm() < TRANSLATION_DEADBAND) {
       return new Translation2d();
     }
-
+    translation = translation.times(translation.getNorm()).times(speedMultiplier);
     Rotation2d translationAngle = translation.getAngle();
     Rotation2d nearestPole = nearestPole(translationAngle);
 

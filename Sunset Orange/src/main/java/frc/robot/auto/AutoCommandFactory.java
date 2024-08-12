@@ -8,6 +8,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -57,8 +58,13 @@ public class AutoCommandFactory {
         return new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     mDrivetrainSubsystem.runZeroingCommand(),
-                    AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints)
-                ),
+                    // if odom pose is close enough to the starting pose to 
+                    Commands.either(AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints),
+                    new InstantCommand(
+                    () -> mDrivetrainSubsystem.setPose(path.getPreviewStartingHolonomicPose())),
+                    ()->{return path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getNorm()<1.0;}
+                    )
+                    ),
                 
                 new InstantCommand(()->mIntaker.setAngle(IntakerConstants.FEED_ANGLE+15.0)).andThen(new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)).
                     andThen(new FeedCommand(mIntaker)).andThen(new InstantCommand(()->{mShooter.stop();mIntaker.stop();}))

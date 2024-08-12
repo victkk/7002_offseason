@@ -16,7 +16,11 @@ public class ClimbCommand extends Command{
     }
     @Override
     public void execute() {
-        mClimber.setClimberDuty(climbDutySupplier.get());
+        if(Math.abs(climbDutySupplier.get())<0.1){
+            mClimber.setClimberDuty(0);
+        }else{
+        mClimber.setClimberDuty(climbDutySupplier.get()*climbDutySupplier.get()*0.5);
+        }
     }
     @Override
     public void end(boolean interrupted){

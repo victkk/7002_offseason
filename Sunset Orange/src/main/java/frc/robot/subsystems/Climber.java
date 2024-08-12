@@ -54,6 +54,9 @@ public class Climber extends SubsystemBase {
         leftClimberConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
         leftClimberConfig.CurrentLimits.SupplyCurrentThreshold = 60.0;
         leftClimberConfig.CurrentLimits.SupplyTimeThreshold = 0.5;
+        leftClimberConfig.MotionMagic.MotionMagicAcceleration=10.0;
+        leftClimberConfig.MotionMagic.MotionMagicCruiseVelocity=5.0;
+        
         leftClimberConfig.Feedback.SensorToMechanismRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
         
         var rightClimberConfig = new TalonFXConfiguration();
@@ -73,6 +76,9 @@ public class Climber extends SubsystemBase {
         leftClimberConfig.CurrentLimits.SupplyCurrentLimit = 40.0;
         leftClimberConfig.CurrentLimits.SupplyCurrentThreshold = 60.0;
         leftClimberConfig.CurrentLimits.SupplyTimeThreshold = 0.5;
+            leftClimberConfig.MotionMagic.MotionMagicAcceleration=10.0;
+        leftClimberConfig.MotionMagic.MotionMagicCruiseVelocity=5.0;
+        
         leftClimberConfig.Feedback.SensorToMechanismRatio = ClimberConstants.CLIMBER_GEAR_RATIO;
 
         leftClimberMotor.getConfigurator().apply(leftClimberConfig);

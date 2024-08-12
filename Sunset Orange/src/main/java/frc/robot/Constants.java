@@ -167,11 +167,11 @@ public final class Constants {
   }
 
   public static final class ClimberConstants{
-    public static final int LEFT_CLIMBER_ID =10; 
-    public static final int RIGHT_CLIMBER_ID =11;
+    public static final int LEFT_CLIMBER_ID =15; 
+    public static final int RIGHT_CLIMBER_ID =16;
     public static final double MAX_TRAVEL_DIST =15;
     public static final double DIAMETER=0.10;
-    public static final double CLIMBER_GEAR_RATIO=6;
+    public static final double CLIMBER_GEAR_RATIO=84.0/18.0*40.0/16.0;
 
   }
 

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IntakerConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.auto.modes.*;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DriveWithTriggerCommand;
 import frc.robot.commands.FeedCommand;
 import frc.robot.commands.IntakeCommand;
@@ -55,6 +56,7 @@ public class RobotContainer {
   private final DrivetrainSubsystem sDrivetrainSubsystem = new DrivetrainSubsystem();
   public final Intaker sIntaker = new Intaker();
   public final Shooter sShooter = new Shooter();
+  public final Climber sClimber = new Climber();
 
   /* pre-constructed commands */
   private final Command resetHeadingCommand = new InstantCommand(
@@ -136,6 +138,7 @@ public class RobotContainer {
     operatorController.b().whileTrue(new SuckFromSourceCommand(sShooter,sIntaker));
     operatorController.y().whileTrue(new InstantCommand(()->sIntaker.setAngle(IntakerConstants.AMP_ANGLE)).andThen(new WaitCommand(1.0)).andThen(new InstantCommand(()->sIntaker.setRollerAmp()))).onFalse(new InstantCommand(()->sIntaker.stop()));
     operatorController.rightBumper().onTrue(new adjustIntakerCommand(sIntaker));
+    operatorController.leftBumper().whileTrue(new ClimbCommand(sClimber,()->operatorController.getLeftY() ));
     driverController.x().whileTrue(mVisionShootCommand.andThen(new FeedCommand(sIntaker))).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));;
     driverController.a().whileTrue(mSnapToAmp);
     driverController.b().whileTrue(mSnapToSource.alongWith(new SuckFromSourceCommand(sShooter, sIntaker)));

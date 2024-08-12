@@ -24,6 +24,7 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToAngleCommand;
 import frc.robot.commands.SuckFromSourceCommand;
 import frc.robot.commands.VisionShootCommand;
+import frc.robot.commands.adjustIntakerCommand;
 import frc.robot.lib6907.CommandSwerveController;
 import frc.robot.lib6907.CommandSwerveController.DriveMode;
 import frc.robot.subsystems.ApriltagCoprocessor;
@@ -61,24 +62,27 @@ public class RobotContainer {
           sDrivetrainSubsystem.zeroHeading();
           driverController.setTranslationDirection(true);
         });
-  private final Command mZeroingCommand = sDrivetrainSubsystem.runZeroingCommand().alongWith(resetHeadingCommand);
+  private final Command mZeroingCommand = sDrivetrainSubsystem.runZeroingCommand().alongWith(new InstantCommand(()->{
+    sDrivetrainSubsystem.zeroHeading();
+    driverController.setTranslationDirection(true);
+  }));
 
   private final SnapToAngleCommand mDriveWithRightStick = new SnapToAngleCommand(
       sDrivetrainSubsystem,
       () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
-      () -> driverController.getDriveRotationAngle(), // amp heading
+      () -> driverController.getDriveRotationAngle(), 
       () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
     
   private final SnapToAngleCommand mSnapToSource = new SnapToAngleCommand(
       sDrivetrainSubsystem,
       () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
-      () -> DriverStation.getAlliance().get()==Alliance.Blue?Optional.of(new Rotation2d(90.0)):Optional.of(new Rotation2d(90.0)), // amp heading
+      () -> DriverStation.getAlliance().get()==Alliance.Blue?Optional.of(Rotation2d.fromDegrees(90.0)):Optional.of(Rotation2d.fromDegrees(90.0)), // amp heading
       () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
 
   private final SnapToAngleCommand mSnapToAmp = new SnapToAngleCommand(
       sDrivetrainSubsystem,
       () -> driverController.getDriveTranslation(driverController.isRobotRelative()),
-      () -> Optional.of(new Rotation2d(90.0)), // amp heading
+      () -> Optional.of(Rotation2d.fromDegrees(90.0)), // amp heading
       () -> driverController.isRobotRelative() == DriveMode.ROBOT_ORIENTED);
 
   private final DriveWithTriggerCommand mDriveWithTriggerCommand = new DriveWithTriggerCommand(sDrivetrainSubsystem,
@@ -103,7 +107,7 @@ public class RobotContainer {
     SmartDashboard.putData(sIntaker);
     SmartDashboard.putData(mDriveWithTriggerCommand);
     SmartDashboard.putData(sShooter);
-
+    mSnapToAmp.setName("SnapToAmp");
     ApriltagCoprocessor.getInstance().setLoggingEnabled(true);
   }
 
@@ -131,8 +135,8 @@ public class RobotContainer {
     operatorController.x().whileTrue(mShootCommand.andThen(mFeedCommand)).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));
     operatorController.b().whileTrue(new SuckFromSourceCommand(sShooter,sIntaker));
     operatorController.y().whileTrue(new InstantCommand(()->sIntaker.setAngle(IntakerConstants.AMP_ANGLE)).andThen(new WaitCommand(1.0)).andThen(new InstantCommand(()->sIntaker.setRollerAmp()))).onFalse(new InstantCommand(()->sIntaker.stop()));
-    
-    driverController.x().whileTrue(mVisionShootCommand);
+    operatorController.rightBumper().onTrue(new adjustIntakerCommand(sIntaker));
+    driverController.x().whileTrue(mVisionShootCommand.andThen(new FeedCommand(sIntaker))).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));;
     driverController.a().whileTrue(mSnapToAmp);
     driverController.b().whileTrue(mSnapToSource.alongWith(new SuckFromSourceCommand(sShooter, sIntaker)));
       }

@@ -158,7 +158,7 @@ public class Intaker extends SubsystemBase {
     }
     @Override
     public void periodic() {
-      SmartDashboard.putNumber("Current Position", getRotation());
+      SmartDashboard.putNumber("Current Position", getAngleDeg());
       SmartDashboard.putNumber("target Position", getTargetAngleDeg());
       SmartDashboard.putNumber("Stator Current", getStatorCurrent());
       SmartDashboard.putNumber("Supply Current", getSupplyCurrent());

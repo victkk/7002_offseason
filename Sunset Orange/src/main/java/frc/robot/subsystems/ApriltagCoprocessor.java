@@ -54,7 +54,7 @@ public class ApriltagCoprocessor extends SubsystemBase {
       ApriltagCamShooterSide = new PhotonCamera(SHOOTER_CAMERA_NAME);
 
       Transform3d kRobotToCameraForShooterSide =
-          new Transform3d(-0.28, -0.06, 0.25, new Rotation3d(0, 220.0 / 180 * Math.PI, 0));
+          new Transform3d(-0.24, 0.12, 0.25, new Rotation3d(0, 220.0 / 180 * Math.PI, 0));
      
 
       aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);

@@ -56,7 +56,12 @@ public class RobotContainer {
   public final Shooter sShooter = new Shooter();
 
   /* pre-constructed commands */
-  private final Command mZeroingCommand = sDrivetrainSubsystem.runZeroingCommand();
+  private final Command resetHeadingCommand = new InstantCommand(
+        () -> {
+          sDrivetrainSubsystem.zeroHeading();
+          driverController.setTranslationDirection(true);
+        });
+  private final Command mZeroingCommand = sDrivetrainSubsystem.runZeroingCommand().alongWith(resetHeadingCommand);
 
   private final SnapToAngleCommand mDriveWithRightStick = new SnapToAngleCommand(
       sDrivetrainSubsystem,
@@ -117,11 +122,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    Command resetHeadingCommand = new InstantCommand(
-        () -> {
-          sDrivetrainSubsystem.zeroHeading();
-          driverController.setTranslationDirection(true);
-        });
+
     
     resetHeadingCommand.addRequirements(sDrivetrainSubsystem);
     driverController.start().onTrue(resetHeadingCommand);

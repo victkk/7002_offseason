@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import java.util.Optional;
 
@@ -55,6 +56,8 @@ public class CommandSwerveController extends CommandXboxController {
 
     // this prevents the target velocity increase to fast, but should be included in setpoint
     // generator already
+    SmartDashboard.putNumber("joysticks:yRawSpeed", ySpeed);
+    SmartDashboard.putNumber("joysticks:xRawSpeed", xSpeed);
     double speedMultiplier = slowMode() ? 0.4 : 1.0;
     xSpeed = translationXRateLimiter.calculate(xSpeed);
     ySpeed = translationYRateLimiter.calculate(ySpeed);
@@ -64,14 +67,16 @@ public class CommandSwerveController extends CommandXboxController {
     if (translation.getNorm() < TRANSLATION_DEADBAND) {
       return new Translation2d();
     }
+
+
+    // Rotation2d translationAngle = translation.getAngle();
+    // Rotation2d nearestPole = nearestPole(translationAngle);
+    // if (Math.abs(translationAngle.minus(nearestPole).getDegrees()) < NEAR_POLE_DRIVE_DEGREES) {
+    //   translation = new Translation2d(translation.getNorm(), nearestPole);
+    // }
     translation = translation.times(translation.getNorm()).times(speedMultiplier);
-    Rotation2d translationAngle = translation.getAngle();
-    Rotation2d nearestPole = nearestPole(translationAngle);
-
-    if (Math.abs(translationAngle.minus(nearestPole).getDegrees()) < NEAR_POLE_DRIVE_DEGREES) {
-      translation = new Translation2d(translation.getNorm(), nearestPole);
-    }
-
+    SmartDashboard.putNumber("joysticks:yProcSpeed", translation.getX());
+    SmartDashboard.putNumber("joysticks:xProcSpeed", translation.getY());
     return translation;
   }
 

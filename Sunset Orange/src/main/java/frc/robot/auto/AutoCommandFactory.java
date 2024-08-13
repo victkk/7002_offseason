@@ -7,6 +7,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -58,11 +59,18 @@ public class AutoCommandFactory {
         return new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     mDrivetrainSubsystem.runZeroingCommand(),
-                    // if odom pose is close enough to the starting pose to 
-                    Commands.either(AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints),
+                    // if odom pose is close enough to the path starting pose then we trust odom pose
+                    // if not, vision may have failed, so trust the path starting pose
+                    Commands.either(AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints).alongWith(
+                        new InstantCommand(()->SmartDashboard.putString("Auto:", "trust odom pose"))
+                    ),
                     new InstantCommand(
-                    () -> mDrivetrainSubsystem.setPose(path.getPreviewStartingHolonomicPose())),
-                    ()->{return path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getNorm()<1.0;}
+                    () -> {
+                        mDrivetrainSubsystem.setPose(path.getPreviewStartingHolonomicPose());
+                        SmartDashboard.putString("Auto:", "trust path starting pose");
+                    }),
+                    
+                    ()->{return path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getNorm()<2.0;}
                     )
                     ),
                 

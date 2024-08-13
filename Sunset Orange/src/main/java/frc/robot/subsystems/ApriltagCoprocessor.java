@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -51,20 +52,23 @@ public class ApriltagCoprocessor extends SubsystemBase {
 
   private ApriltagCoprocessor() {
     try {
+      PhotonCamera.setVersionCheckEnabled(false);
+      var entry = NetworkTableInstance.getDefault().getTable(SHOOTER_CAMERA_NAME);
       ApriltagCamShooterSide = new PhotonCamera(SHOOTER_CAMERA_NAME);
-
       Transform3d kRobotToCameraForShooterSide =
           new Transform3d(-0.24, 0.12, 0.25, new Rotation3d(0, 220.0 / 180 * Math.PI, 0));
      
 
       aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
 
-      photonPoseEstimatorForShooterSide =
-          new PhotonPoseEstimator(
-              aprilTagFieldLayout,
-              PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-              ApriltagCamShooterSide,
-              kRobotToCameraForShooterSide);
+      // photonPoseEstimatorForShooterSide =
+      //     new PhotonPoseEstimator(
+      //         aprilTagFieldLayout,
+      //         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      //         ApriltagCamShooterSide,
+      //         kRobotToCameraForShooterSide);
+        photonPoseEstimatorForShooterSide =
+          new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCameraForShooterSide);
 
 
       photonPoseEstimatorForShooterSide.setMultiTagFallbackStrategy(
@@ -116,6 +120,7 @@ public class ApriltagCoprocessor extends SubsystemBase {
    */
   public Optional<EstimatedRobotPose> updateEstimatedGlobalPose(
       Pose2d prevEstimatedRobotPose, Translation2d chassisVelMS) {
+        seesAnyTags();
     Optional<EstimatedRobotPose> shooterSideResult =
         processCameraResult(
             ApriltagCamShooterSide, photonPoseEstimatorForShooterSide, prevEstimatedRobotPose);
@@ -406,6 +411,7 @@ public class ApriltagCoprocessor extends SubsystemBase {
     boolean shooterSideSeesTags = ApriltagCamShooterSide.getLatestResult().hasTargets();
     // boolean intakeSideSeesTags = ApriltagCamIntakeSide.getLatestResult().hasTargets();
     logToSmartDashboard("Shooter Side Sees Tags", shooterSideSeesTags);
+    logToSmartDashboard("photon-result-toString:", ApriltagCamShooterSide.getLatestResult().toString());
     // logToSmartDashboard("Intake Side Sees Tags", intakeSideSeesTags);
     return shooterSideSeesTags;// || intakeSideSeesTags;
   }

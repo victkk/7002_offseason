@@ -259,6 +259,6 @@ public final class Constants {
   
   public static final class PathfindConstants {
     public static final PathConstraints constraints =
-        new PathConstraints(4.0, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+        new PathConstraints(0.5, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
   }
 }

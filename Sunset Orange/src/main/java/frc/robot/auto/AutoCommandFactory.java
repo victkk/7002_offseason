@@ -53,8 +53,17 @@ public class AutoCommandFactory {
 
 
     public static Command zeroAndShootPreload(DrivetrainSubsystem mDrivetrainSubsystem,Intaker mIntaker,Shooter mShooter,String StartingPath){
-        PathPlannerPath path = PathPlannerPath.fromPathFile(StartingPath);
-                
+        PathPlannerPath path;
+
+        Optional<Alliance> currentAlliance = DriverStation.getAlliance();
+                  
+        if (currentAlliance.isPresent() && currentAlliance.get() == Alliance.Red) {
+        path = PathPlannerPath.fromPathFile(StartingPath).flipPath();
+        }
+        else{
+            path = PathPlannerPath.fromPathFile(StartingPath);
+        }
+        
         return new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     mDrivetrainSubsystem.runZeroingCommand(),

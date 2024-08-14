@@ -84,9 +84,9 @@ public class Climber extends SubsystemBase {
         rightClimberMotor.optimizeBusUtilization();
     }
     
-    public void setClimberDuty(double duty) {
-        leftClimberMotor.setControl(leftRequest.withOutput(duty));
-        rightClimberMotor.setControl(rightRequest.withOutput(duty));
+    public void setClimberDuty(double duty1,double duty2) {
+        leftClimberMotor.setControl(leftRequest.withOutput(duty1));
+        rightClimberMotor.setControl(rightRequest.withOutput(duty2));
     }
 
     public void stop() {

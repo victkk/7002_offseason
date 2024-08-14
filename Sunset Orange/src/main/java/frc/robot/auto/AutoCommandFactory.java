@@ -8,10 +8,13 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.IntakerConstants;
 import frc.robot.Constants.PathfindConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.FeedCommand;
@@ -42,21 +45,37 @@ public class AutoCommandFactory {
                 new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)
             ),
             new FeedCommand(mIntaker),
-            new InstantCommand(()->{mShooter.stop();mIntaker.stop();})
+            new InstantCommand(()->{mShooter.stop();mIntaker.stop();}),
+            new InstantCommand(()->mIntaker.setAngle(IntakerConstants.INTAKE_ANGLE)),
+            new WaitCommand(0.5)
         );
     }
 
 
     public static Command zeroAndShootPreload(DrivetrainSubsystem mDrivetrainSubsystem,Intaker mIntaker,Shooter mShooter,String StartingPath){
-        PathPlannerPath path = PathPlannerPath.fromPathFile(StartingPath);
-        
+        PathPlannerPath path;
+
+        Optional<Alliance> currentAlliance = DriverStation.getAlliance();
+                  
+        if (currentAlliance.isPresent() && currentAlliance.get() == Alliance.Red) {
+        path = PathPlannerPath.fromPathFile(StartingPath).flipPath();
+        }
+        else{
+            path = PathPlannerPath.fromPathFile(StartingPath);
+        }
         
         return new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     mDrivetrainSubsystem.runZeroingCommand(),
-                    AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints)
-                ),
-                new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS).
+                    // if odom pose is close enough to the starting pose to 
+                    Commands.either(AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints),
+                    new InstantCommand(
+                    () -> mDrivetrainSubsystem.setPose(path.getPreviewStartingHolonomicPose())),
+                    ()->{return path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getNorm()<1.0;}
+                    )
+                    ),
+                
+                new InstantCommand(()->mIntaker.setAngle(IntakerConstants.FEED_ANGLE+15.0)).andThen(new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)).
                     andThen(new FeedCommand(mIntaker)).andThen(new InstantCommand(()->{mShooter.stop();mIntaker.stop();}))
         );
     }

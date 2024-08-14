@@ -151,27 +151,13 @@ public final class Constants {
 
 
 
-  public static final class ArmConstants {
-    // ARM
-    public static final int ARM_ID = 10;
-    // arm pitch when resting in degrees
-    public static final double ARM_REST_ANGLE = 22.0;
-    // arm pitch when resting in rotations
-    public static final double ARM_REST_POSITION = ARM_REST_ANGLE / 360.0;
-    // arm pitch when in max pitch in degrees
-    public static final double ARM_MAX_ANGLE = 120.0;
-    // arm pitch when in max pitch in rotations
-    public static final double ARM_MAX_POSITION = ARM_MAX_ANGLE / 360.0;
-
-    public static final double STABILIZE_TIME = 0.1;
-  }
 
   public static final class ClimberConstants{
-    public static final int LEFT_CLIMBER_ID =10; 
-    public static final int RIGHT_CLIMBER_ID =11;
+    public static final int LEFT_CLIMBER_ID =15; 
+    public static final int RIGHT_CLIMBER_ID =16;
     public static final double MAX_TRAVEL_DIST =15;
     public static final double DIAMETER=0.10;
-    public static final double CLIMBER_GEAR_RATIO=6;
+    public static final double CLIMBER_GEAR_RATIO=84.0/18.0*40.0/16.0;
 
   }
 
@@ -196,7 +182,7 @@ public final class Constants {
     public static final double INTAKE_ANGLE=175.0;
     public static final double INTAKE_POSITION = INTAKE_ANGLE/360.0;                                                   
 
-    public static final double AMP_ANGLE=85.0;
+    public static final double AMP_ANGLE=78.0;
     public static final double AMP_POSITION = AMP_ANGLE / 360.0;
     //arm gear ratio
     public static final double ARM_GEAR_RATIO=24;
@@ -206,16 +192,15 @@ public final class Constants {
 
     //roller
     public static final double ROLLER_FEED_VOLTAGE=-12;
-    public static final double ROLLER_INTAKE_VOLTAGE=12;
+    public static final double ROLLER_INTAKE_VOLTAGE=10;
     public static final double ROLLER_AMP_VOLTAGE=-3.8;
   }
   public static final class ShooterConstants {
     public static final int SHOOTER_ID = 11;
     public static final int SHOOTER_FOLLOWER = 13;
     public static final double GEAR_RATIO = 20.0/32.0;
-    public static final double SHOOT_RPS = 100;
-
-    public static final double VISION_RPS = 100;
+    public static final double SHOOT_RPS =50;
+    public static final double VISION_RPS = 50;
 
   }
 
@@ -236,8 +221,8 @@ public final class Constants {
       // kSpeakerAngleMap.put(4.00, 38.0);
     }
 
-    public static final Translation2d kRedSpeaker = new Translation2d(16.32, 5.55);
-    public static final Translation2d kBlueSpeaker = new Translation2d(0.26, 5.54);
+    public static final Translation2d kRedSpeaker = new Translation2d(16.58, 5.55);
+    public static final Translation2d kBlueSpeaker = new Translation2d(0.00, 5.54);
   }
 
   public static final class FiendConstants {
@@ -259,6 +244,6 @@ public final class Constants {
   
   public static final class PathfindConstants {
     public static final PathConstraints constraints =
-        new PathConstraints(4.0, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+        new PathConstraints(0.5, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
   }
 }

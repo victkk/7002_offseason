@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakerConstants;
 
 public class Intaker extends SubsystemBase {
@@ -30,7 +29,7 @@ public class Intaker extends SubsystemBase {
     private final TalonFX mArmTalon;
     private double targetAngle;
     private final VoltageOut IntakeVoltage = new VoltageOut(0);
-    private final MotionMagicVoltage ArmMotionMagic = new MotionMagicVoltage(ArmConstants.ARM_REST_POSITION);
+    private final MotionMagicVoltage ArmMotionMagic = new MotionMagicVoltage(IntakerConstants.REST_POSITION);
 
     private final DigitalInput mIntakeOmron;
     public Intaker() {
@@ -158,7 +157,7 @@ public class Intaker extends SubsystemBase {
     }
     @Override
     public void periodic() {
-      SmartDashboard.putNumber("Current Position", getRotation());
+      SmartDashboard.putNumber("Current Position", getAngleDeg());
       SmartDashboard.putNumber("target Position", getTargetAngleDeg());
       SmartDashboard.putNumber("Stator Current", getStatorCurrent());
       SmartDashboard.putNumber("Supply Current", getSupplyCurrent());

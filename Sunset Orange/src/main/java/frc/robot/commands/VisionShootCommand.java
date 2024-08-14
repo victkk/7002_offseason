@@ -62,7 +62,7 @@ public class VisionShootCommand extends Command {
     mShooter = shooter;
     this.driveVectorSupplier = driveVectorSupplier;
     this.robotCentricSupplier = robotCentricSupplier;
-    goalHeading = new Rotation2d(getGoalToRobot().getX(),getGoalToRobot().getY());
+    goalHeading = new Rotation2d(getGoalToRobot().getX(),getGoalToRobot().getY()).rotateBy(Rotation2d.fromDegrees(180));
     addRequirements(drivetrainSubsystem); // required for default command
   }
 
@@ -84,8 +84,8 @@ public class VisionShootCommand extends Command {
     Translation2d driveVector =
         driveVectorSupplier
             .get()
-            .times(DriveConstants.kTeleDriveMaxSpeedMetersPerSecond); // -1~1 to meters per second
-    goalHeading = new Rotation2d(getGoalToRobot().getX(),getGoalToRobot().getY());
+            .times(DriveConstants.kTeleDriveMaxSpeedMetersPerSecond).times(0.2); // -1~1 to meters per second
+    goalHeading = new Rotation2d(getGoalToRobot().getX(),getGoalToRobot().getY()).rotateBy(Rotation2d.fromDegrees(180));
     snapToAnglePID.setGoal(goalHeading.getRadians());
     mDrivetrainSubsystem.drive(
         driveVector,
@@ -95,23 +95,18 @@ public class VisionShootCommand extends Command {
                 + snapToAnglePID.getSetpoint().velocity, // output is in radians per second
         !robotCentricSupplier.getAsBoolean());
 
-        if(isAligned()&& mShooter.getMainMotorVelocity() - ShooterConstants.VISION_RPS >0
-        && mShooter.getFollowerVelocity()- ShooterConstants.VISION_RPS > 0){
-            mIntaker.setRollerFeed();
-        }
+
   }
 
   @Override
   public void end(boolean interrupted) {
     mDrivetrainSubsystem.drive(new Translation2d(0, 0), 0, true);
-    mShooter.stop();
-    mIntaker.setAngle(IntakerConstants.FEED_ANGLE);
-    mIntaker.stopRoller();
 }
 
   @Override
   public boolean isFinished() {
-    return false;
+    return isAligned()&& mShooter.getMainMotorVelocity() - ShooterConstants.VISION_RPS >0
+        && mShooter.getFollowerVelocity()- ShooterConstants.VISION_RPS > 0;
     // return isAligned();
   }
 

@@ -30,7 +30,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private Thread m_visionThread;
+  // private Thread m_visionThread;
   private volatile boolean keepRunning = true; // 控制线程是否继续运行
 
   public Robot() {
@@ -50,34 +50,13 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());  
 
+    UsbCamera camera1 = CameraServer.startAutomaticCapture();
+    UsbCamera camera2 = CameraServer.startAutomaticCapture(1);
+    // camera.setResolution(640, 480);
 
-    m_visionThread = new Thread(() -> {
-      try {
-        UsbCamera camera = CameraServer.startAutomaticCapture();
-        camera.setResolution(640, 480);
 
-        CvSink cvSink = CameraServer.getVideo();
-        CvSource outputStream = CameraServer.putVideo("Raw Image", 640, 480);
-
-        Mat mat = new Mat();
-
-        while (keepRunning) {
-          if (cvSink.grabFrame(mat) == 0) {
-            outputStream.notifyError(cvSink.getError());
-            continue;
-          }
-
-          // 直接将原始图像发送到Dashboard
-          outputStream.putFrame(mat);
-        }
-      } finally {
-        // 保证资源被释放
-        keepRunning = false;
-      }
-    });
-
-    m_visionThread.setDaemon(true);
-    m_visionThread.start();
+    // m_visionThread.setDaemon(true);
+    // m_visionThread.start();
   }
 
 
@@ -103,7 +82,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     // 当机器人进入disabled模式时，停止线程
     keepRunning = false;
-    m_visionThread.interrupt();
+    // m_visionThread.interrupt();
   }
 
   @Override

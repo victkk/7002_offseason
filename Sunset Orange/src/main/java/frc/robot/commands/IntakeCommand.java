@@ -3,7 +3,6 @@ package frc.robot.commands;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakerConstants;
 import frc.robot.lib6907.DualEdgeDelayedBoolean;
 import frc.robot.lib6907.DualEdgeDelayedBoolean.EdgeType;

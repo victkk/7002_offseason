@@ -4,7 +4,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakerConstants;
 import frc.robot.lib6907.DualEdgeDelayedBoolean;
 import frc.robot.lib6907.DualEdgeDelayedBoolean.EdgeType;
@@ -75,6 +74,6 @@ public class adjustIntakerCommand extends Command{
   @Override
   public boolean isFinished() {
     
-    return currentState==State.END&&Timer.getFPGATimestamp()-timeStamp>0.01;
+    return currentState==State.END&&Timer.getFPGATimestamp()-timeStamp>0.03;
   }
 }

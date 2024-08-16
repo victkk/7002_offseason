@@ -20,10 +20,10 @@ public class ClimbCommand extends Command{
     public void execute() {
         double left =0;
         double right = 0;
-        if(Math.abs(climbLeftDutySupplier.get())<0.1){
+        if(Math.abs(climbLeftDutySupplier.get())>0.1){
             left = Math.abs(climbLeftDutySupplier.get())*climbLeftDutySupplier.get()*0.5;
         }
-        if(Math.abs(climbRightDutySupplier.get())<0.1){
+        if(Math.abs(climbRightDutySupplier.get())>0.1){
             right = Math.abs(climbRightDutySupplier.get())*climbRightDutySupplier.get()*0.5;
         }
         mClimber.setClimberDuty(left, right);

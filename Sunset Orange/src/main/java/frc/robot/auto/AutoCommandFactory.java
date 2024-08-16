@@ -2,6 +2,7 @@ package frc.robot.auto;
 
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -26,7 +27,6 @@ import frc.robot.subsystems.Intaker;
 public class AutoCommandFactory {
 
     public static Command followPathIntakeAndShoot(DrivetrainSubsystem mDrivetrainSubsystem,Intaker mIntaker,Shooter mShooter,String Path1,String Path2){
-        Optional<Alliance> currentAlliance = DriverStation.getAlliance();
                   PathPlannerPath startPath = PathPlannerPath.fromPathFile(Path1);
                   PathPlannerPath returnPath = PathPlannerPath.fromPathFile(Path2);
                   
@@ -77,6 +77,43 @@ public class AutoCommandFactory {
                 
                 new InstantCommand(()->mIntaker.setAngle(IntakerConstants.FEED_ANGLE+15.0)).andThen(new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)).
                     andThen(new FeedCommand(mIntaker)).andThen(new InstantCommand(()->{mShooter.stop();mIntaker.stop();}))
+        );
+    }
+
+    public static Command followPathIntakeAndShootWithFallback(DrivetrainSubsystem mDrivetrainSubsystem,Intaker mIntaker,Shooter mShooter,String startingPath,String finishingPath, String fallingbackPath, String fallingbackFinishingPath){
+        
+        PathPlannerPath startPath = PathPlannerPath.fromPathFile(startingPath);
+        PathPlannerPath finishPath = PathPlannerPath.fromPathFile(finishingPath);
+        PathPlannerPath fallbackPath = PathPlannerPath.fromPathFile(fallingbackPath);
+        PathPlannerPath fallbackFinishPath = PathPlannerPath.fromPathFile(fallingbackFinishingPath);
+        
+        return new SequentialCommandGroup(
+            new ParallelDeadlineGroup(
+                AutoBuilder.followPath(startPath),
+                new IntakeCommand(mIntaker)
+                ),
+            new WaitCommand(1.0),//越小越好 只要保证在回去之前intake omron能够正确的检测到环
+            Commands.either(
+                new ParallelCommandGroup(
+                    AutoBuilder.followPath(finishPath),
+                    new WaitCommand(1.0).andThen(new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS))
+                ),
+                new SequentialCommandGroup(
+                    new ParallelCommandGroup(
+                        AutoBuilder.followPath(fallbackPath),
+                        new IntakeCommand(mIntaker)
+                    ),
+                    new ParallelCommandGroup(
+                        AutoBuilder.followPath(fallbackFinishPath),
+                        new WaitCommand(1.0).andThen(new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)
+                    ))
+                ),
+                ()->{return mIntaker.isOmronDetected();}
+            ),
+            new FeedCommand(mIntaker),
+            new InstantCommand(()->{mShooter.stop();mIntaker.stop();}),
+            new InstantCommand(()->mIntaker.setAngle(IntakerConstants.INTAKE_ANGLE)),
+            new WaitCommand(0.5)
         );
     }
 }

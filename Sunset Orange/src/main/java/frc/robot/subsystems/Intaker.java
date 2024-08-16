@@ -152,7 +152,7 @@ public class Intaker extends SubsystemBase {
     public void stopRoller() {
         mRollerTalon.setControl(IntakeVoltage.withOutput(0.0));
     }
-    public boolean isOmronDetected() {
+    public synchronized boolean isOmronDetected() {
       return !mIntakeOmron.get();
     }
     @Override

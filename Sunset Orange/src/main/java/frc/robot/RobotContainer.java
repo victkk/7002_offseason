@@ -20,6 +20,7 @@ import frc.robot.auto.modes.*;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DriveWithTriggerCommand;
 import frc.robot.commands.FeedCommand;
+import frc.robot.commands.FollowNoteCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.SnapToAngleCommand;
@@ -33,6 +34,7 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.Intaker;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.GamePieceProcessor;
 import java.util.Optional;
 
 /**
@@ -57,6 +59,9 @@ public class RobotContainer {
   public final Intaker sIntaker = new Intaker();
   public final Shooter sShooter = new Shooter();
   public final Climber sClimber = new Climber();
+
+  private final GamePieceProcessor gamePieceProcessor = GamePieceProcessor.getInstance(); 
+  // 使用单例模式获取 GamePieceProcessor 实例
 
   /* pre-constructed commands */
   private final Command resetHeadingCommand = new InstantCommand(
@@ -97,6 +102,10 @@ public class RobotContainer {
   private final IntakeCommand mIntakeCommand = new IntakeCommand(sIntaker);
   private final FeedCommand mFeedCommand = new FeedCommand(sIntaker);
   private final ShootCommand mShootCommand = new ShootCommand(sShooter,ShooterConstants.SHOOT_RPS);
+
+  // 定义 FollowNoteCommand 变量
+  private final Command FollowNoteCommand = new FollowNoteCommand(sDrivetrainSubsystem,gamePieceProcessor);
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -142,6 +151,7 @@ public class RobotContainer {
     driverController.x().whileTrue(mVisionShootCommand.andThen(new FeedCommand(sIntaker))).onFalse(new InstantCommand(()->{sShooter.stop();sIntaker.stop();}));;
     driverController.a().whileTrue(mSnapToAmp);
     driverController.b().whileTrue(mSnapToSource.alongWith(new SuckFromSourceCommand(sShooter, sIntaker)));
+    driverController.y().whileTrue(FollowNoteCommand);
       }
 
 

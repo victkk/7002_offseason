@@ -184,6 +184,9 @@ public final class Constants {
 
     public static final double AMP_ANGLE=78.0;
     public static final double AMP_POSITION = AMP_ANGLE / 360.0;
+
+      public static final double ADJUST_ANGLE=60.0;
+    public static final double ADJUST_POSITION = ADJUST_ANGLE / 360.0;
     //arm gear ratio
     public static final double ARM_GEAR_RATIO=24;
 

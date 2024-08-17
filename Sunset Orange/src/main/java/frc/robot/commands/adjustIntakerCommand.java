@@ -24,8 +24,10 @@ public class adjustIntakerCommand extends Command{
 
   State currentState;
   double timeStamp;
+  boolean allowAdjust;
   public adjustIntakerCommand(Intaker intaker) {
     sIntaker = intaker;
+    allowAdjust=false;
     addRequirements(sIntaker);
   }
 
@@ -35,11 +37,15 @@ public class adjustIntakerCommand extends Command{
   @Override
   public void initialize() {
     currentState = State.OUT;
-    sIntaker.setAngle(IntakerConstants.AMP_ANGLE);
+    sIntaker.setAngle(IntakerConstants.ADJUST_ANGLE);
   }
 
   @Override
   public void execute() {
+    if(sIntaker.getAngleDeg()-sIntaker.getTargetAngleDeg()<5.0){
+      allowAdjust=true;
+    }
+    if(allowAdjust){
     if((!sIntaker.isOmronDetected())&&(currentState==State.OUT)){
       currentState = State.IN;
       timeStamp = Timer.getFPGATimestamp();
@@ -60,6 +66,7 @@ public class adjustIntakerCommand extends Command{
         break;
 
     }
+  }
         
 
   }

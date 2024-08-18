@@ -71,7 +71,7 @@ public class AutoCommandFactory {
                     Commands.either(AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints),
                     new InstantCommand(
                     () -> mDrivetrainSubsystem.setPose(path.getPreviewStartingHolonomicPose())),
-                    ()->{return path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getNorm()<1.0 && path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getAngle().getDegrees()<4.0;}
+                    ()->{return path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getNorm()<1.0 && Math.abs(path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getAngle().getDegrees())<4.0;}
                     )
                     ),
                 

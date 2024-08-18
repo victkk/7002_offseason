@@ -44,10 +44,10 @@ public class AutoCommandFactory {
                 AutoBuilder.followPath(returnPath),
                 new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)
             ),
-            new FeedCommand(mIntaker),
+            new SequentialCommandGroup(new FeedCommand(mIntaker),
             new InstantCommand(()->{mShooter.stop();mIntaker.stop();}),
             new InstantCommand(()->mIntaker.setAngle(IntakerConstants.INTAKE_ANGLE)),
-            new WaitCommand(0.5)
+            new WaitCommand(0.5)).unless(()->{return !mIntaker.isOmronDetected();})
         );
     }
 

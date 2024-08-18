@@ -21,6 +21,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.FeedCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.adjustIntakerCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intaker;
@@ -41,6 +42,7 @@ public class AutoCommandFactory {
                 new IntakeCommand(mIntaker)
                 ),
             new ParallelCommandGroup(
+                new adjustIntakerCommand(mIntaker),
                 AutoBuilder.followPath(returnPath),
                 new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)
             ),

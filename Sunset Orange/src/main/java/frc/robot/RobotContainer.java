@@ -166,6 +166,7 @@ public class RobotContainer {
     mChooser.addOption("33", new mid33AutoCommand(sDrivetrainSubsystem, sIntaker, sShooter));
     mChooser.addOption("A", new A515355AutoCommand(sDrivetrainSubsystem, sIntaker, sShooter));
     mChooser.addOption("TR", new TH31R(sDrivetrainSubsystem, sIntaker, sShooter));
+    mChooser.addOption("Tt", new mid33With51Fallback52(sDrivetrainSubsystem, sIntaker, sShooter));
     mChooser.addOption("e", new a313332AutoCommand(sDrivetrainSubsystem, sIntaker, sShooter));
     SmartDashboard.putData("AUTO CHOICES", mChooser);
   }

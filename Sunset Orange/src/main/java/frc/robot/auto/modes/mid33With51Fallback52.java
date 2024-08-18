@@ -8,11 +8,12 @@ import frc.robot.subsystems.Shooter;
 
 public class mid33With51Fallback52 extends SequentialCommandGroup{
     public mid33With51Fallback52(DrivetrainSubsystem mDrivetrainSubsystem,Intaker mIntaker, Shooter mShooter){
-        addCommands(AutoCommandFactory.zeroAndShootPreload(mDrivetrainSubsystem, mIntaker, mShooter,"homeTo31"));
-        addCommands(AutoCommandFactory.followPathIntakeAndShoot(mDrivetrainSubsystem, mIntaker, mShooter,"homeTo31","31ToHome"));
-        addCommands(AutoCommandFactory.followPathIntakeAndShoot(mDrivetrainSubsystem, mIntaker, mShooter,"homeTo32","32ToHome"));
-        addCommands(AutoCommandFactory.followPathIntakeAndShoot(mDrivetrainSubsystem, mIntaker, mShooter,"homeTo33","33ToHome"));
-        addCommands(AutoCommandFactory.followPathIntakeAndShootWithFallback(mDrivetrainSubsystem, mIntaker, mShooter,"homeTo51","51ToHome","51to52","52ToHome"));
+        addCommands(AutoCommandFactory.zeroAndShootPreload(mDrivetrainSubsystem, mIntaker, mShooter,                                                                                                                                                                                    "HT31"));
+        addCommands(AutoCommandFactory.followPathIntakeAndShootWithFallback(mDrivetrainSubsystem, mIntaker, mShooter,"HT31","31TH","31T32","32TH"));
+        //addCommands(AutoCommandFactory.followPathIntakeAndShoot(mDrivetrainSubsystem, mIntaker, mShooter,"HT31","31TH"));
+        //addCommands(AutoCommandFactory.followPathIntakeAndShoot(mDrivetrainSubsystem, mIntaker, mShooter,"HT32","32TH"));
+        //addCommands(AutoCommandFactory.followPathIntakeAndShoot(mDrivetrainSubsystem, mIntaker, mShooter,"HT33","33TH"));
+        //addCommands(AutoCommandFactory.followPathIntakeAndShootWithFallback(mDrivetrainSubsystem, mIntaker, mShooter,"HT51","51TH","51T52","52TH"));
         addRequirements(mDrivetrainSubsystem,mIntaker,mShooter);
     }
 }

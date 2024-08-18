@@ -7,7 +7,7 @@
     "L"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 0.5,
+  "defaultMaxVel": 1.9,
   "defaultMaxAccel": 5.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,

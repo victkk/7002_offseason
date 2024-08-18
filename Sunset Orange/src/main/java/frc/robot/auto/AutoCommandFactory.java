@@ -21,7 +21,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.FeedCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.adjustIntakerCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intaker;
@@ -42,14 +41,13 @@ public class AutoCommandFactory {
                 new IntakeCommand(mIntaker)
                 ),
             new ParallelCommandGroup(
-                new adjustIntakerCommand(mIntaker),
                 AutoBuilder.followPath(returnPath),
                 new ShootCommand(mShooter, ShooterConstants.SHOOT_RPS)
             ),
-            new FeedCommand(mIntaker),
+            new SequentialCommandGroup(new FeedCommand(mIntaker),
             new InstantCommand(()->{mShooter.stop();mIntaker.stop();}),
             new InstantCommand(()->mIntaker.setAngle(IntakerConstants.INTAKE_ANGLE)),
-            new WaitCommand(0.5)
+            new WaitCommand(0.5)).unless(()->{return !mIntaker.isOmronDetected();})
         );
     }
 
@@ -73,7 +71,7 @@ public class AutoCommandFactory {
                     Commands.either(AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints),
                     new InstantCommand(
                     () -> mDrivetrainSubsystem.setPose(path.getPreviewStartingHolonomicPose())),
-                    ()->{return path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getNorm()<1.0;}
+                    ()->{return path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getNorm()<1.0 && Math.abs(path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getAngle().getDegrees())<4.0;}
                     )
                     ),
                 

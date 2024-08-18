@@ -3,60 +3,75 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2490196273393739,
-        "y": 5.5410316277334815
+        "x": 0.8400155353136765,
+        "y": 6.621971013816897
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.80255051592593,
-        "y": 5.5410316277334815
+        "x": 1.8722639580510483,
+        "y": 6.82647305982631
       },
       "isLocked": false,
-      "linkedName": "home"
+      "linkedName": "LH"
     },
     {
       "anchor": {
-        "x": 7.987848953159354,
-        "y": 5.774748251750359
+        "x": 2.6513193714406413,
+        "y": 5.8623919857566875
       },
       "prevControl": {
-        "x": 4.764507180258901,
-        "y": 8.06322352857719
+        "x": 2.2617916647458447,
+        "y": 6.66092378448102
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "52"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.45,
+      "rotationDegrees": -44.84179455695428,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 1,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -22.10944834386074,
       "rotateFast": false
     }
   ],
@@ -70,13 +85,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -46.21887523513127,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "F",
+  "folder": "L",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 54.86580694309467,
     "velocity": 0
   },
   "useDefaultConstraints": true

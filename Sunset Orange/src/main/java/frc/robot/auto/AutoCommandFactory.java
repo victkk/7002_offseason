@@ -79,4 +79,32 @@ public class AutoCommandFactory {
                     andThen(new FeedCommand(mIntaker)).andThen(new InstantCommand(()->{mShooter.stop();mIntaker.stop();}))
         );
     }
+
+    public static Command zeroAndShootPreload2(DrivetrainSubsystem mDrivetrainSubsystem,Intaker mIntaker,Shooter mShooter,String StartingPath){
+        PathPlannerPath path;
+
+        Optional<Alliance> currentAlliance = DriverStation.getAlliance();
+                  
+        if (currentAlliance.isPresent() && currentAlliance.get() == Alliance.Red) {
+        path = PathPlannerPath.fromPathFile(StartingPath).flipPath();
+        }
+        else{
+            path = PathPlannerPath.fromPathFile(StartingPath);
+        }
+        
+        return new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    mDrivetrainSubsystem.runZeroingCommand(),
+                    // if odom pose is close enough to the starting pose to 
+                    Commands.either(AutoBuilder.pathfindToPoseFlipped(path.getPreviewStartingHolonomicPose(), PathfindConstants.constraints),
+                    new InstantCommand(
+                    () -> mDrivetrainSubsystem.setPose(path.getPreviewStartingHolonomicPose())),
+                    ()->{return path.getPreviewStartingHolonomicPose().minus(mDrivetrainSubsystem.getPose()).getTranslation().getNorm()<1.0;}
+                    )
+                    ),
+                
+                new InstantCommand(()->mIntaker.setAngle(IntakerConstants.FEED_ANGLE+15.0)).andThen(new InstantCommand(()->mShooter.setSpeed(15.0))).
+                    andThen(new FeedCommand(mIntaker)).andThen(new InstantCommand(()->{mShooter.stop();mIntaker.stop();}))
+        );
+    }
 }

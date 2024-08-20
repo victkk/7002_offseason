@@ -51,8 +51,8 @@ public class Robot extends TimedRobot {
     DriverStation.startDataLog(DataLogManager.getLog());  
 
     UsbCamera camera1 = CameraServer.startAutomaticCapture();
-    UsbCamera camera2 = CameraServer.startAutomaticCapture(1);
-    // camera.setResolution(640, 480);
+    // UsbCamera camera2 = CameraServer.startAutomaticCapture(1);
+    // camera1.setResolution(640, 480);
 
 
     // m_visionThread.setDaemon(true);
